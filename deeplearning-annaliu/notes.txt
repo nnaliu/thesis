@@ -1,0 +1,4 @@
+RNN: run this on the word embeddings.
+this gives us a vector encoding of each sentence
+
+for the extra features, you can just concatentate (add to h)
