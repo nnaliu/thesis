@@ -70,7 +70,8 @@ def read_files(lower=False, vectors=None):
     lower = True if vectors is not None else False
     # tweet = data.Field(sequential=False, tensor_type=torch.LongTensor, lower=lower)
     tweet = data.Field(sequential=True)
-    label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    label = data.Field(sequential=False)
+    # label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
     retweet_count = data.Field(use_vocab=False, tensor_type=torch.IntTensor, preprocessing=data.Pipeline(lambda x: int(x)))
     favorite_count = data.Field(use_vocab=False, tensor_type=torch.IntTensor, preprocessing=data.Pipeline(lambda x: int(x)))
     user_followers_count = data.Field(use_vocab=False, tensor_type=torch.IntTensor, preprocessing=data.Pipeline(lambda x: int(x)))
