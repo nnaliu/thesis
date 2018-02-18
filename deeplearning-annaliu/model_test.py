@@ -14,7 +14,7 @@ import pdb
 class CNNClassifier(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
                 feature_maps=100, filter_windows=[3,4,5], dropout=0.5):
-        super(CNN, self).__init__()
+        super(CNNClassifier, self).__init__()
 
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
