@@ -40,7 +40,7 @@ if args.model == 'CNN':
         print("USING CUDA")
         model = model.cuda()
     utils.train(model, train_iter, 1) # Change number of epochs later
-    print("Validation: ", utils.validate(model, val_iter))
+    print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
     filename = 'cnn_model.sav'
