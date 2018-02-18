@@ -40,11 +40,11 @@ def train(model, data_iter, epochs, scheduler=None, grad_norm=5):
 def evaluate(model, data_iter):
     model.eval()
     correct, total = 0., 0.
-    for batch in val_iter:
+    for batch in data_iter:
         probs = model(batch.text.t_())
         _, argmax = probs.max(1)
         for i, predicted in enumerate(list(argmax.data)):
-            if predicted+1 == batch.label[i].data[0]:
+            if predicted+1 == batch.hate_label[i].data[0]:
                 correct += 1
             total += 1
     return correct / total

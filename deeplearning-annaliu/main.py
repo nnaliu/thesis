@@ -39,7 +39,7 @@ if args.model == 'CNN':
     if torch.cuda.is_available():
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, 1) # Change number of epochs later
+    utils.train(model, train_iter, 4) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
