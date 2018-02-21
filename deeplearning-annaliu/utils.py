@@ -17,7 +17,41 @@ def process_batch(batch):
         hate_label = hate_label.cuda()
     return text, hate_label
 
+def process_batch2(batch):
+    # FILL THIS IN HERE
+    text, hate_label = batch.text.t_(), batch.hate_label
+    pdb.set_trace()
+    torch.cat((text, batch.retweet_count, favorite_count, user_followers_count, user_following_count), 0)
+    if torch.cuda.is_available():
+        text = text.cuda()
+        hate_label = hate_label.cuda()
+    return text, hate_label
+
 def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
+    model.train()
+    criterion = nn.CrossEntropyLoss()
+    parameters = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = optim.Adadelta(parameters, lr=0.5)
+
+    counter = 0
+    for epoch in range(epochs):
+        counter += 1
+        total_loss = 0
+        for batch in data_iter:
+            text, label = process_batch2(batch)
+            model.zero_grad()
+            logit = model(text)
+            label = label - 1
+            loss = criterion(logit, label)
+            loss.backward()
+            nn.utils.clip_grad_norm(parameters, max_norm=grad_norm)
+            optimizer.step()
+            total_loss += loss.data
+        if counter % 5 == 0:
+            print("Validation: ", evaluate(model, val_iter))
+        print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
+
+def train2(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
