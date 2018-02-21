@@ -30,7 +30,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = optim.Adadelta(parameters, lr=0.5)
+    optimizer = optim.Adam(parameters, lr=0.01)
 
     counter = 0
     for epoch in range(epochs):
