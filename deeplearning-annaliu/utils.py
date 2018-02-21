@@ -21,7 +21,7 @@ def process_batch2(batch):
     # FILL THIS IN HERE
     text, hate_label = batch.text.t_(), batch.hate_label
     pdb.set_trace()
-    torch.cat((text, batch.retweet_count, favorite_count, user_followers_count, user_following_count), 0)
+    torch.cat((text, batch.retweet_count, batch.favorite_count, batch.user_followers_count, batch.user_following_count), 0)
     if torch.cuda.is_available():
         text = text.cuda()
         hate_label = hate_label.cuda()
@@ -38,7 +38,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
         counter += 1
         total_loss = 0
         for batch in data_iter:
-            text, label = process_batch2(batch)
+            text, label = process_batch(batch)
             model.zero_grad()
             logit = model(text)
             label = label - 1
