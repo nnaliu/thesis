@@ -39,7 +39,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
             total_loss += loss.data
         if counter % 5 == 0:
             print("Validation: ", evaluate(model, val_iter))
-        print(str(epoch) + " loss = " + str(total_loss.data)) # Find a better print statement
+        print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
 
 def evaluate(model, data_iter):
     model.eval()
