@@ -12,7 +12,7 @@ from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 import pdb
 
 class CNNClassifier(nn.Module):
-    def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, class_number=None,
+    def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
                 feature_maps=100, filter_windows=[3,4,5], dropout=0.5):
         super(CNNClassifier, self).__init__()
 
