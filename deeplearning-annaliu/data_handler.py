@@ -99,7 +99,6 @@ def read_files(lower=False, vectors=None):
         fields=fields
     )
     tweet.build_vocab(train, vectors=vectors)
-    pdb.set_trace()
     label.build_vocab(train)
     # What do these mean?
 

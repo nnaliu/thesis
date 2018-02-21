@@ -39,11 +39,11 @@ if args.model == 'CNN':
     if torch.cuda.is_available():
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, 4) # Change number of epochs later
+    utils.train(model, train_iter, val_iter, 50) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
-    filename = 'cnn_model.sav'
+    filename = 'models/cnn_model.sav'
     torch.save(model.state_dict(), filename)
 
 elif args.model == 'RNN':

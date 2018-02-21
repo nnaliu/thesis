@@ -17,13 +17,15 @@ def process_batch(batch):
         hate_label = hate_label.cuda()
     return text, hate_label
 
-def train(model, data_iter, epochs, scheduler=None, grad_norm=5):
+def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = optim.Adadelta(parameters, lr=0.5)
 
+    counter = 0
     for epoch in range(epochs):
+        counter += 1
         total_loss = 0
         for batch in data_iter:
             text, label = process_batch(batch)
@@ -35,7 +37,9 @@ def train(model, data_iter, epochs, scheduler=None, grad_norm=5):
             nn.utils.clip_grad_norm(parameters, max_norm=grad_norm)
             optimizer.step()
             total_loss += loss.data
-        print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
+        if counter % 5 == 0:
+            print("Validation: ", evaluate(model, val_iter))
+        print(str(epoch) + " loss = " + str(total_loss.data)) # Find a better print statement
 
 def evaluate(model, data_iter):
     model.eval()
