@@ -17,7 +17,7 @@ import pdb
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, default='CNN',
                     help='type of model')
-parser.add_argument('--batch_size', type=int, default=20)
+parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--bptt', type=int, default=32)
 parser.add_argument('--epochs', type=int, default=50)
 args = parser.parse_args()
