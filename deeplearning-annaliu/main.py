@@ -55,7 +55,7 @@ elif args.model == "CNNFeatures":
         print("USING CUDA")
         model = model.cuda()
     utils.train2(model, train_iter, val_iter, 10) # Change number of epochs later
-    print("Validation: ", utils.evaluate(model, val_iter))
+    print("Validation: ", utils.evaluate2(model, val_iter))
 
     # Saving Model
     filename = 'cnn_model_features.sav'
