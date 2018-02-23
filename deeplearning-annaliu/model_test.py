@@ -116,7 +116,6 @@ class CNNClassifierFeatures(nn.Module):
             embedding = torch.cat((embedding, embedding2), 1)
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)] # should be batch by (feature maps x filters) size!
         result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
-        pdb.set_trace()
         result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
         result = self.fc(self.dropout(result))
         return result
