@@ -46,17 +46,17 @@ if args.model == 'CNN':
     filename = 'cnn_model.sav'
     torch.save(model.state_dict(), filename)
 
-elif args.model == "CNN-features":
+elif args.model == "CNNFeatures":
     train_iter, val_iter, test_iter = data_handler.get_cnn_iterators((train, val, test), args.batch_size)
-    model = model_test.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+    model = model_test.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
     if torch.cuda.is_available():
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 40) # Change number of epochs later
+    utils.train2(model, train_iter, val_iter, 40) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
-    filename = 'cnn_model.sav'
+    filename = 'cnn_model_features.sav'
     torch.save(model.state_dict(), filename)
 
 elif args.model == 'RNN':

@@ -30,14 +30,14 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = optim.Adam(parameters, lr=0.01)
+    optimizer = optim.Adam(parameters, lr=0.0001)
 
     counter = 0
     for epoch in range(epochs):
         counter += 1
         total_loss = 0
         for batch in data_iter:
-            text, label = process_batch2(batch)
+            text, label = process_batch(batch)
             model.zero_grad()
             logit = model(text)
             label = label - 1
@@ -63,7 +63,7 @@ def train2(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
         for batch in data_iter:
             text, label = process_batch(batch)
             model.zero_grad()
-            logit = model(text)
+            logit = model(text, (batch.retweet_count.t(), batch.favorite_count.t(), batch.user_followers_count.t(), batch.user_following_count.t()))
             label = label - 1
             loss = criterion(logit, label)
             loss.backward()
