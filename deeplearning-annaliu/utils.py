@@ -28,7 +28,6 @@ def process_batch2(batch):
     if USE_CUDA:
         text = text.cuda()
         hate_label = hate_label.cuda()
-        rt, fav, usr_followers, usr_following = rt.cuda(), fav.cuda(), usr_followers.cuda(), usr_following.cuda()
     return text, hate_label, (rt, fav, usr_followers, usr_following)
 
 def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
