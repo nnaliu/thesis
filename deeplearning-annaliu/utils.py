@@ -95,7 +95,7 @@ def evaluate2(model, data_iter):
     model.eval()
     correct, total = 0., 0.
     for batch in data_iter:
-        text, label, features = process_batch(batch)
+        text, label, features = process_batch2(batch)
         probs = model(text, features)
         _, argmax = probs.max(1)
         for i, predicted in enumerate(list(argmax.data)):
