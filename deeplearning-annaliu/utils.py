@@ -9,10 +9,12 @@ import pdb
 
 torch.manual_seed(1)
 
+USE_CUDA = True if torch.cuda.is_available() else False
+
 def process_batch(batch):
     # FILL THIS IN HERE
     text, hate_label = batch.text.t_(), batch.hate_label
-    if torch.cuda.is_available():
+    if USE_CUDA:
         text = text.cuda()
         hate_label = hate_label.cuda()
     return text, hate_label
@@ -20,11 +22,14 @@ def process_batch(batch):
 def process_batch2(batch):
     # FILL THIS IN HERE
     text, hate_label = batch.text.t_(), batch.hate_label
-    torch.cat((text, batch.retweet_count.t(), batch.favorite_count.t(), batch.user_followers_count.t(), batch.user_following_count.t()), 1)
-    if torch.cuda.is_available():
+    rt, fav = batch.retweet_count.t(), batch.favorite_count.t()
+    usr_followers = batch.user_followers_count.t()
+    usr_following = batch.user_following_count.t()
+    if USE_CUDA:
         text = text.cuda()
         hate_label = hate_label.cuda()
-    return text, hate_label
+        rt, fav, usr_followers, usr_following = rt.cuda(), fav.cuda(), usr_followers.cuda(), usr_following.cuda()
+    return text, hate_label, (rt, fav, usr_followers, usr_following)
 
 def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
     model.train()
@@ -61,9 +66,9 @@ def train2(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
         counter += 1
         total_loss = 0
         for batch in data_iter:
-            text, label = process_batch(batch)
+            text, label, features = process_batch2(batch)
             model.zero_grad()
-            logit = model(text, (batch.retweet_count.t(), batch.favorite_count.t(), batch.user_followers_count.t(), batch.user_following_count.t()))
+            logit = model(text, features)
             label = label - 1
             loss = criterion(logit, label)
             loss.backward()

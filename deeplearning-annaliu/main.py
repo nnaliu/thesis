@@ -14,6 +14,8 @@ import data_handler, utils
 import model_test
 import pdb
 
+USE_CUDA = True if torch.cuda.is_available() else False
+
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, default='CNN',
                     help='type of model')
@@ -36,7 +38,7 @@ print("Vocab size ", vocab_size)
 if args.model == 'CNN':
     train_iter, val_iter, test_iter = data_handler.get_cnn_iterators((train, val, test), args.batch_size)
     model = model_test.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-    if torch.cuda.is_available():
+    if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
     utils.train(model, train_iter, val_iter, 40) # Change number of epochs later
@@ -49,10 +51,10 @@ if args.model == 'CNN':
 elif args.model == "CNNFeatures":
     train_iter, val_iter, test_iter = data_handler.get_cnn_iterators((train, val, test), args.batch_size)
     model = model_test.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
-    if torch.cuda.is_available():
+    if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train2(model, train_iter, val_iter, 40) # Change number of epochs later
+    utils.train2(model, train_iter, val_iter, 10) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model

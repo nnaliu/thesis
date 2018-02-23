@@ -91,10 +91,10 @@ class CNNClassifierFeatures(nn.Module):
 
     def forward(self, inputs, features):
         # Pad inputs if less than filter window size
-        rt, fav, usr_follow, usr_following = features
+        rt, fav, usr_followers, usr_following = features
         rt = rt.type(torch.FloatTensor).sqrt()
         fav = fav.type(torch.FloatTensor).sqrt()
-        usr_follow = usr_follow.type(torch.FloatTensor).sqrt()
+        usr_followers = usr_followers.type(torch.FloatTensor).sqrt()
         usr_following = usr_following.type(torch.FloatTensor).sqrt()
         # use logs of larger numbers! LOGS???
         # discretize these if the numbers are super high!
@@ -112,7 +112,7 @@ class CNNClassifierFeatures(nn.Module):
             embedding = torch.cat((embedding, embedding2), 1)
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)] # should be batch by (feature maps x filters) size!
         result = torch.cat(result, 1)
-        result = torch.cat((result.type(torch.FloatTensor), rt, fav, usr_follow, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
+        result = torch.cat((result.type(torch.FloatTensor), rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
         result = self.fc(self.dropout(result))
         return result
 
