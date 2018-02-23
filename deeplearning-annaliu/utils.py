@@ -76,7 +76,7 @@ def train2(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5):
             optimizer.step()
             total_loss += loss.data
         if counter % 5 == 0:
-            print("Validation: ", evaluate(model, val_iter))
+            print("Validation: ", evaluate2(model, val_iter))
         print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
 
 def evaluate(model, data_iter):
@@ -85,6 +85,19 @@ def evaluate(model, data_iter):
     for batch in data_iter:
         text, label = process_batch(batch)
         probs = model(text)
+        _, argmax = probs.max(1)
+        for i, predicted in enumerate(list(argmax.data)):
+            if predicted+1 == label[i].data[0]:
+                correct += 1
+            total += 1
+    return correct / total
+
+def evaluate2(model, data_iter):
+    model.eval()
+    correct, total = 0., 0.
+    for batch in data_iter:
+        text, label, features = process_batch(batch)
+        probs = model(text, features)
         _, argmax = probs.max(1)
         for i, predicted in enumerate(list(argmax.data)):
             if predicted+1 == label[i].data[0]:
