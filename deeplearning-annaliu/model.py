@@ -1,135 +1,162 @@
-# -*- coding: utf-8 -*-
+import argparse
+import math
+import copy
 import torch
 import torch.autograd as autograd
+from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from data_handler import get_data
-import os
-import random
-torch.set_num_threads(8)
-torch.manual_seed(1)
-random.seed(1)
+import torchtext
+from torchtext import data
+from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
+import pdb
+
+USE_CUDA = True if torch.cuda.is_available() else False
+
+class CNNClassifier(nn.Module):
+    def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
+                feature_maps=100, filter_windows=[3,4,5], dropout=0.5):
+        super(CNNClassifier, self).__init__()
+
+        self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
+        self.class_number = class_number
+        self.filter_windows = filter_windows
+        self.in_channel = 1
+        self.out_channel = feature_maps
+        self.model = model
+
+        if model == "static":
+            self.embedding.weight.requires_grad = False
+        elif model == "multichannel":
+            self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
+            self.embedding2.weight.requires_grad = False
+            self.in_channel = 2
+
+        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
+        self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
+        self.dropout = nn.Dropout(dropout)
+        self.fc = nn.Linear(len(filter_windows) * self.out_channel, class_number) # Fully connected layer
+
+    def convolution_max_pool(self, inputs, convolution, i, max_sent_len):
+        result_convolution = F.relu(convolution(inputs)).squeeze(3) # (batch_size, out_channel, max_seq_len)
+        result = F.max_pool1d(result_convolution, result_convolution.size(2)).squeeze(2) # (batch_size, out_channel)
+        return result
+
+    def forward(self, inputs):
+        # Pad inputs if less than filter window size
+        if inputs.size()[1] <= max(self.filter_windows):
+            inputs = F.pad(inputs, (1, math.ceil((max(self.filter_windows)-inputs.size()[1])/2))) # FINISH THIS PADDING
+        
+        max_sent_len = inputs.size(1)
+        embedding = self.embedding(inputs) # (batch_size, max_seq_len, embedding_size)
+        embedding = embedding.unsqueeze(1) # (batch_size, 1, max_seq_len, embedding_size)
+
+        if self.model == "multichannel":
+            embedding2 = self.embedding2(inputs)
+            embedding2 = embedding2.unsqueeze(1)
+            embedding = torch.cat((embedding, embedding2), 1)
+        
+        result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
+        result = self.fc(self.dropout(torch.cat(result, 1)))
+        return result
+
+class CNNClassifierFeatures(nn.Module):
+    def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
+                feature_maps=100, filter_windows=[3,4,5], dropout=0.5):
+        super(CNNClassifierFeatures, self).__init__()
+
+        self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
+        self.class_number = class_number
+        self.filter_windows = filter_windows
+        self.in_channel = 1
+        self.out_channel = feature_maps
+        self.model = model
+
+        if model == "static":
+            self.embedding.weight.requires_grad = False
+        elif model == "multichannel":
+            self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
+            self.embedding2.weight.requires_grad = False
+            self.in_channel = 2
+
+        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
+        self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
+        self.dropout = nn.Dropout(dropout)
+        self.fc = nn.Linear(len(filter_windows) * self.out_channel + 4, class_number) # Fully connected layer, 4 new features
+
+    def convolution_max_pool(self, inputs, convolution, i, max_sent_len):
+        result_convolution = F.relu(convolution(inputs)).squeeze(3) # (batch_size, out_channel, max_seq_len)
+        result = F.max_pool1d(result_convolution, result_convolution.size(2)).squeeze(2) # (batch_size, out_channel)
+        return result
+
+    def forward(self, inputs, features):
+        # Pad inputs if less than filter window size
+        rt, fav, usr_followers, usr_following = features
+        rt = rt.type(torch.FloatTensor).sqrt()
+        fav = fav.type(torch.FloatTensor).sqrt()
+        usr_followers = usr_followers.type(torch.FloatTensor).sqrt()
+        usr_following = usr_following.type(torch.FloatTensor).sqrt()
+        if USE_CUDA:
+            rt, fav, usr_followers, usr_following = rt.cuda(), fav.cuda(), usr_followers.cuda(), usr_following.cuda()
+        # use logs of larger numbers! LOGS???
+        # discretize these if the numbers are super high!
+
+        if inputs.size()[1] <= max(self.filter_windows):
+            inputs = F.pad(inputs, (1, math.ceil((max(self.filter_windows)-inputs.size()[1])/2))) # FINISH THIS PADDING
+        
+        max_sent_len = inputs.size(1)
+        embedding = self.embedding(inputs) # (batch_size, max_seq_len, embedding_size)
+        embedding = embedding.unsqueeze(1) # (batch_size, 1, max_seq_len, embedding_size)
+
+        if self.model == "multichannel":
+            embedding2 = self.embedding2(inputs)
+            embedding2 = embedding2.unsqueeze(1)
+            embedding = torch.cat((embedding, embedding2), 1)
+        result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)] # should be batch by (feature maps x filters) size!
+        result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
+        result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
+        result = self.fc(self.dropout(result))
+        return result
 
 class LSTMClassifier(nn.Module):
-
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
-        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim)
-        self.hidden2label = nn.Linear(hidden_dim, label_size)
-        self.hidden = self.init_hidden()
+        self.n_layers = n_layers
+        self.embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim, n_layers)
+        self.fc = nn.Linear(hidden_dim, label_size)
 
-    def init_hidden(self):
+
+    def init_hidden(self, batch_size=128):
         # the first is the hidden h
-        # the second is the cell  c
-        return (autograd.Variable(torch.zeros(1, 1, self.hidden_dim)),
-                autograd.Variable(torch.zeros(1, 1, self.hidden_dim)))
+        # the second is the cell c
+        if USE_CUDA:
+            return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)).cuda(),
+                Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)).cuda())
 
-    def forward(self, sentence):
-        embeds = self.word_embeddings(sentence)
-        x = embeds.view(len(sentence), 1, -1)
-        lstm_out, self.hidden = self.lstm(x, self.hidden)
-        y  = self.hidden2label(lstm_out[-1])
-        log_probs = F.log_softmax(y)
-        return log_probs
+        return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)),
+                Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)))
 
+    def forward(self, inputs):
+        batch_size = len(inputs)
+        embeddings = self.embeddings(inputs)
+        hidden = self.init_hidden(batch_size)
+        embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        output, hidden = self.lstm(embeddings1, hidden)
+        output = self.fc(output[-1])
+        return output
 
-
-def get_accuracy(truth, pred):
-     assert len(truth)==len(pred)
-     right = 0
-     for i in range(len(truth)):
-         if truth[i]==pred[i]:
-             right += 1.0
-     return right/len(truth)
-
-def train():
-    train_data, dev_data, test_data, word_to_ix, label_to_ix = data_loader.load_MR_data()
-    EMBEDDING_DIM = 50
-    HIDDEN_DIM = 50
-    EPOCH = 100
-    best_dev_acc = 0.0
-    model = LSTMClassifier(embedding_dim=EMBEDDING_DIM,hidden_dim=HIDDEN_DIM,
-                           vocab_size=len(word_to_ix),label_size=len(label_to_ix))
-    loss_function = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(),lr = 1e-3)
-    #optimizer = torch.optim.SGD(model.parameters(), lr = 1e-2)
-    no_up = 0
-    for i in range(EPOCH):
-        random.shuffle(train_data)
-        print('epoch: %d start!' % i)
-        train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i)
-        print('now best dev acc:',best_dev_acc)
-        dev_acc = evaluate(model,dev_data,loss_function,word_to_ix,label_to_ix,'dev')
-        test_acc = evaluate(model, test_data, loss_function, word_to_ix, label_to_ix, 'test')
-        if dev_acc > best_dev_acc:
-            best_dev_acc = dev_acc
-            os.system('rm mr_best_model_acc_*.model')
-            print('New Best Dev!!!')
-            torch.save(model.state_dict(), 'best_models/mr_best_model_acc_' + str(int(test_acc*10000)) + '.model')
-            no_up = 0
-        else:
-            no_up += 1
-            if no_up >= 10:
-                exit()
-
-def evaluate(model, data, loss_function, word_to_ix, label_to_ix, name ='dev'):
-    model.eval()
-    avg_loss = 0.0
-    truth_res = []
-    pred_res = []
-
-    for sent, label in data:
-        truth_res.append(label_to_ix[label])
-        # detaching it from its history on the last instance.
-        model.hidden = model.init_hidden()
-        sent = data_loader.prepare_sequence(sent, word_to_ix)
-        label = data_loader.prepare_label(label, label_to_ix)
-        pred = model(sent)
-        pred_label = pred.data.max(1)[1].numpy()
-        pred_res.append(pred_label)
-        # model.zero_grad() # should I keep this when I am evaluating the model?
-        loss = loss_function(pred, label)
-        avg_loss += loss.data[0]
-    avg_loss /= len(data)
-    acc = get_accuracy(truth_res, pred_res)
-    print(name + ' avg_loss:%g train acc:%g' % (avg_loss, acc ))
-    return acc
+        # batch_size=len(inputs)
+        # hidden = self.init_hidden(batch_size) # [n_layers, batch_sz, hidden_dim], [n_layers, batch_sz, hidden_dim]
+        # embeddings = self.embeddings(inputs).transpose(0, 1) # [batch_sz x input_len x embedding]
+        # pdb.set_trace()
+        # # embeddings = embeddings.view(len(inputs), 1, -1) # do we need this?
+        # output, hidden = self.lstm(embeddings, hidden) 
+        # output = self.fc(output[-1])
+        # return output
 
 
-
-def train_epoch(model, train_data, loss_function, optimizer, word_to_ix, label_to_ix, i):
-    model.train()
-    
-    avg_loss = 0.0
-    count = 0
-    truth_res = []
-    pred_res = []
-    batch_sent = []
-
-    for sent, label in train_data:
-
-
-        truth_res.append(label_to_ix[label])
-        # detaching it from its history on the last instance.
-        model.hidden = model.init_hidden()
-        sent = data_loader.prepare_sequence(sent, word_to_ix)
-        label = data_loader.prepare_label(label, label_to_ix)
-        pred = model(sent)
-        pred_label = pred.data.max(1)[1].numpy()
-        pred_res.append(pred_label)
-        model.zero_grad()
-        loss = loss_function(pred, label)
-        avg_loss += loss.data[0]
-        count += 1
-        if count % 500 == 0:
-            print('epoch: %d iterations: %d loss :%g' % (i, count, loss.data[0]))
-
-        loss.backward()
-        optimizer.step()
-    avg_loss /= len(train_data)
-    print('epoch: %d done! \n train avg_loss:%g , acc:%g'%(i, avg_loss, get_accuracy(truth_res,pred_res)))
-
-train()

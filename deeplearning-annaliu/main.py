@@ -11,7 +11,7 @@ from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 
 import data_handler, utils
-import model_test
+import model
 import pdb
 
 USE_CUDA = True if torch.cuda.is_available() else False
@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, default='CNN',
                     help='type of model')
 parser.add_argument('--batch_size', type=int, default=128)
-parser.add_argument('--bptt', type=int, default=32)
+parser.add_argument('--bptt', type=int, default=128)
 parser.add_argument('--epochs', type=int, default=50)
 args = parser.parse_args()
 
@@ -36,8 +36,8 @@ train, val, test, vocab_size = data_handler.read_files(vectors=vectors)
 print("Vocab size ", vocab_size)
 
 if args.model == 'CNN':
-    train_iter, val_iter, test_iter = data_handler.get_cnn_iterators((train, val, test), args.batch_size)
-    model = model_test.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
+    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
@@ -49,17 +49,26 @@ if args.model == 'CNN':
     torch.save(model.state_dict(), filename)
 
 elif args.model == "CNNFeatures":
-    train_iter, val_iter, test_iter = data_handler.get_cnn_iterators((train, val, test), args.batch_size)
-    model = model_test.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
+    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
+    model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train2(model, train_iter, val_iter, 40) # Change number of epochs later
-    print("Validation: ", utils.evaluate2(model, val_iter))
+    utils.train(model, train_iter, val_iter, 40, has_features=True) # Change number of epochs later
+    print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
 
     # Saving Model
     filename = 'cnn_model_features.sav'
     torch.save(model.state_dict(), filename)
 
-elif args.model == 'RNN':
-    train_iter, val_iter, test_iter = data_handler.get_rnn_iterators((train, val, test), args.batch_size)
+elif args.model == 'LSTM':
+    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
+    model = model.LSTMClassifier(300, 100, vocab_size, 2) # embedding dim, hidden dim, vocab_size, label_size
+    if USE_CUDA:
+        print("USING CUDA")
+        model = model.cuda()
+    utils.train(model, train_iter, val_iter, 40)
+    print("Validation: ", utils.evaluate(model, val_iter))
+
+
+
