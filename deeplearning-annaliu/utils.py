@@ -53,7 +53,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             label = label - 1
             loss = criterion(logit, label)
             loss.backward()
-            nn.utils.clip_grad_norm(parameters, max_norm=grad_norm)
+            nn.utils.clip_grad_norm(parameters, max_norm=2)
             optimizer.step()
             total_loss += loss.data
         if counter % 10 == 0:
