@@ -149,7 +149,8 @@ class LSTMClassifier(nn.Module):
         batch_size = len(inputs)
         hidden = self.init_hidden(batch_size)
         embeddings = self.dropout(self.embedding(inputs))
-        embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        # embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        embeddings1 = embeddings.transpose(0, 1)
         output, hidden = self.lstm(embeddings1, hidden)
         # output: [seq_len x batch x hidden]
         output = self.hidden2label(self.dropout1(output[-1]))
@@ -192,7 +193,8 @@ class LSTMClassifierFeatures(nn.Module):
         batch_size = len(inputs)
         hidden = self.init_hidden(batch_size)
         embeddings = self.dropout(self.embedding(inputs))
-        embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        # embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        embeddings1 = embeddings.transpose(0, 1)
         output, hidden = self.lstm(embeddings1, hidden)
         # output: [seq_len x batch x hidden]
         output = output[-1].type(torch.FloatTensor).cuda() if USE_CUDA else output[-1].type(torch.FloatTensor)
