@@ -12,6 +12,7 @@ from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 import pdb
 
+torch.manual_seed(1)
 USE_CUDA = True if torch.cuda.is_available() else False
 
 class CNNClassifier(nn.Module):
@@ -122,12 +123,15 @@ class CNNClassifierFeatures(nn.Module):
         return result
 
 class LSTMClassifier(nn.Module):
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, dropout_p=0.25):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, n_layers)
+
+        self.dropout = nn.Dropout(dropout_p)
+        self.dropout1 = nn.Dropout(0.5)
         self.fc = nn.Linear(hidden_dim, label_size)
 
 
@@ -143,11 +147,11 @@ class LSTMClassifier(nn.Module):
 
     def forward(self, inputs):
         batch_size = len(inputs)
-        embeddings = self.embeddings(inputs)
+        embeddings = self.dropout(self.embeddings(inputs))
         hidden = self.init_hidden(batch_size)
         embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
         output, hidden = self.lstm(embeddings1, hidden)
-        output = self.fc(output[-1])
+        output = self.fc(self.dropout1(output[-1]))
         return output
 
         # batch_size=len(inputs)
