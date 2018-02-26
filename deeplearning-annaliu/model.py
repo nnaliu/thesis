@@ -127,7 +127,7 @@ class LSTMClassifier(nn.Module):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
-        self.embedding = nn.Embedding(vocab_size+1, embedding_dim)
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.num_directions = 2 if bidirectional else 1
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
 
