@@ -127,13 +127,13 @@ class LSTMClassifier(nn.Module):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
-        self.embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.num_directions = 2 if bidirectional else 1
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
 
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
-        self.fc = nn.Linear(hidden_dim, label_size)
+        self.hidden2label = nn.Linear(hidden_dim, label_size)
 
     def init_hidden(self, batch_size=128):
         # the first is the hidden h
@@ -146,12 +146,14 @@ class LSTMClassifier(nn.Module):
                 Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)))
 
     def forward(self, inputs):
+
+        pdb.set_trace()
         batch_size = len(inputs)
-        embeddings = self.dropout(self.embeddings(inputs))
         hidden = self.init_hidden(batch_size)
+        embeddings = self.dropout(self.embedding(inputs))
         embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
         output, hidden = self.lstm(embeddings1, hidden)
-        output = self.fc(self.dropout1(output[-1]))
+        output = self.hidden2label(self.dropout1(output[-1]))
         return output
 
         # batch_size=len(inputs)
