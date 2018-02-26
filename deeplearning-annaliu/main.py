@@ -29,9 +29,9 @@ data_handler.prepare_csv()
 
 # Word embeddings
 # vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
-# url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
-# vectors = Vectors('wiki.simple.vec', url=url)
-vectors=None
+url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
+vectors = Vectors('wiki.simple.vec', url=url)
+# vectors=None
 train, val, test, vocab_size = data_handler.read_files(vectors=vectors)
 # train, text, val = data_handler.restore_dataset(train_examples, val_examples, test_examples)
 print("Vocab size ", vocab_size)
