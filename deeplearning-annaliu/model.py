@@ -123,7 +123,7 @@ class CNNClassifierFeatures(nn.Module):
         return result
 
 class LSTMClassifier(nn.Module):
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, dropout_p=0.25):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, dropout_p=0.25, tieweights=True):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
@@ -133,6 +133,9 @@ class LSTMClassifier(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
         self.fc = nn.Linear(hidden_dim, label_size)
+
+        if tieweights:
+            self.fc.weight = self.embeddings.weight
 
 
     def init_hidden(self, batch_size=128):
