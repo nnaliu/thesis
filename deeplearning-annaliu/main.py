@@ -94,7 +94,7 @@ GuidedBackProp Saliency Analysis
 """
 
 filename = 'cnn_model.sav'
-model = model.CNN(model='multichannel', vocab_size=vocab_size, class_number=2)
+model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 model.load_state_dict(torch.load(filename))
 
 pdb.set_trace()
