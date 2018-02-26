@@ -58,7 +58,6 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             optimizer.step()
             total_loss += loss.data
         if counter % 10 == 0:
-            pdb.set_trace()
             print("Validation: ", evaluate(model, val_iter, has_features))
         print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
 

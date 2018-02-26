@@ -123,12 +123,13 @@ class CNNClassifierFeatures(nn.Module):
         return result
 
 class LSTMClassifier(nn.Module):
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, dropout_p=0.25):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, dropout_p=0.25, bidirectional=True):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim, n_layers)
+        self.num_directions = 2 if bidirectional else 1
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
 
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
@@ -138,11 +139,11 @@ class LSTMClassifier(nn.Module):
         # the first is the hidden h
         # the second is the cell c
         if USE_CUDA:
-            return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)).cuda(),
-                Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)).cuda())
+            return (Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)).cuda(),
+                Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)).cuda())
 
-        return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)),
-                Variable(torch.zeros(self.n_layers, batch_size, self.hidden_dim)))
+        return (Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)),
+                Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)))
 
     def forward(self, inputs):
         batch_size = len(inputs)
