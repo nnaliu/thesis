@@ -67,7 +67,7 @@ elif args.model == 'LSTM':
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 70)
+    utils.train(model, train_iter, val_iter, 30)
     print("Validation: ", utils.evaluate(model, val_iter))
 
 

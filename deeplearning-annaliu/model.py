@@ -134,7 +134,6 @@ class LSTMClassifier(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
         self.hidden2label = nn.Linear(hidden_dim, label_size)
-        # self.hidden = self.init_hidden(batch_sz)
 
     def init_hidden(self, batch_size=128):
         # the first is the hidden h
@@ -147,7 +146,6 @@ class LSTMClassifier(nn.Module):
                 Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)))
 
     def forward(self, inputs):
-        # pdb.set_trace()
         batch_size = len(inputs)
         hidden = self.init_hidden(batch_size)
         embeddings = self.dropout(self.embedding(inputs))
@@ -158,13 +156,48 @@ class LSTMClassifier(nn.Module):
         output = self.hidden2label(self.dropout1(output[-1]))
         return output
 
-        # batch_size=len(inputs)
-        # hidden = self.init_hidden(batch_size) # [n_layers, batch_sz, hidden_dim], [n_layers, batch_sz, hidden_dim]
-        # embeddings = self.embeddings(inputs).transpose(0, 1) # [batch_sz x input_len x embedding]
-        # pdb.set_trace()
-        # # embeddings = embeddings.view(len(inputs), 1, -1) # do we need this?
-        # output, hidden = self.lstm(embeddings, hidden) 
-        # output = self.fc(output[-1])
-        # return output
+class LSTMClassifierFeatures(nn.Module):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, batch_sz=128, dropout_p=0.25, bidirectional=True):
+        super(LSTMClassifierFeatures, self).__init__()
+        self.hidden_dim = hidden_dim
+        self.n_layers = n_layers
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.num_directions = 2 if bidirectional else 1
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
 
+        self.dropout = nn.Dropout(dropout_p)
+        self.dropout1 = nn.Dropout(0.5)
+        self.hidden2label = nn.Linear(hidden_dim, label_size)
 
+    def init_hidden(self, batch_size=128):
+        # the first is the hidden h
+        # the second is the cell c
+        if USE_CUDA:
+            return (Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)).cuda(),
+                Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)).cuda())
+
+        return (Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)),
+                Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)))
+
+    def forward(self, inputs, features):
+        rt, fav, usr_followers, usr_following = features
+        rt = rt.type(torch.FloatTensor).sqrt()
+        fav = fav.type(torch.FloatTensor).sqrt()
+        usr_followers = usr_followers.type(torch.FloatTensor).sqrt()
+        usr_following = usr_following.type(torch.FloatTensor).sqrt()
+        if USE_CUDA:
+            rt, fav, usr_followers, usr_following = rt.cuda(), fav.cuda(), usr_followers.cuda(), usr_following.cuda()
+        # use logs of larger numbers! LOGS???
+        # discretize these if the numbers are super high!
+
+        batch_size = len(inputs)
+        hidden = self.init_hidden(batch_size)
+        embeddings = self.dropout(self.embedding(inputs))
+        # embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        embeddings1 = embeddings.transpose(0, 1)
+        output, hidden = self.lstm(embeddings1, hidden)
+        # output: [seq_len x batch x hidden]
+        pdb.set_trace()
+        output = torch.cat((output[-1], rt, fav, usr_followers, usr_following), 1)
+        output = self.hidden2label(self.dropout1(output[-1]))
+        return output
