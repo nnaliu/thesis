@@ -134,7 +134,7 @@ class LSTMClassifier(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
         self.hidden2label = nn.Linear(hidden_dim, label_size)
-        self.hidden = init_hidden(batch_sz)
+        self.hidden = self.init_hidden(batch_sz)
 
     def init_hidden(self, batch_size=128):
         # the first is the hidden h
