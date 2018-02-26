@@ -28,7 +28,7 @@ args = parser.parse_args()
 data_handler.prepare_csv()
 
 # Word embeddings
-vectors = [GloVe(name='twitter.27B', dim='200')] # CharNGram(), FastText()
+vectors = [GloVe(name='840B', dim='300')] # CharNGram(), FastText()
 # url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
 # vectors = Vectors('wiki.simple.vec', url=url)
 train, val, test, vocab_size = data_handler.read_files(vectors=vectors)
