@@ -151,7 +151,9 @@ class LSTMClassifier(nn.Module):
         batch_size = len(inputs)
         embeddings = self.dropout(self.embedding(inputs))
         embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)
+        # maybe embeddings1 = embeddings.transpose(0, 1)
         output, self.hidden = self.lstm(embeddings1, self.hidden)
+        # output: [seq_len x batch x hidden]
         output = self.hidden2label(self.dropout1(output[-1]))
         return output
 
