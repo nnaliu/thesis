@@ -40,7 +40,7 @@ if args.model == 'CNN':
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 40) # Change number of epochs later
+    utils.train(model, train_iter, val_iter, 20) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
@@ -53,7 +53,7 @@ elif args.model == "CNNFeatures":
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 40, has_features=True) # Change number of epochs later
+    utils.train(model, train_iter, val_iter, 20, has_features=True) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
 
     # Saving Model
