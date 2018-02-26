@@ -34,8 +34,8 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
-    # optimizer = optim.Adam(parameters, lr=0.01)
-    optimizer = optim.SGD(parameters, lr=0.1)
+    optimizer = optim.Adam(parameters, lr=0.01)
+    # optimizer = optim.SGD(parameters, lr=0.1)
 
     counter = 0
     for epoch in range(epochs):
@@ -50,6 +50,8 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             else:
                 text, label = process_batch(batch)
                 logit = model(text)
+
+            pdb.set_trace()
 
             label = label - 1
             loss = criterion(logit, label)
