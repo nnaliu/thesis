@@ -43,7 +43,7 @@ if args.model == 'CNN':
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 20) # Change number of epochs later
+    utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter))
 
     # Saving Model
@@ -56,7 +56,7 @@ elif args.model == "CNNFeatures":
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
-    utils.train(model, train_iter, val_iter, 20, has_features=True) # Change number of epochs later
+    utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
     print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
 
     # Saving Model
@@ -93,9 +93,9 @@ elif args.model == 'LSTMFeatures':
 GuidedBackProp Saliency Analysis
 """
 
-filename = 'cnn_model.sav'
-model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-model.load_state_dict(torch.load(filename))
+# filename = 'cnn_model.sav'
+# model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+# model.load_state_dict(torch.load(filename))
 
 pdb.set_trace()
 batch = next(iter(train_iter))
