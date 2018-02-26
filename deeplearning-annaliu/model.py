@@ -147,7 +147,7 @@ class LSTMClassifier(nn.Module):
                 Variable(torch.zeros(self.n_layers * self.num_directions, batch_size, self.hidden_dim // self.num_directions)))
 
     def forward(self, inputs):
-        pdb.set_trace()
+        # pdb.set_trace()
         batch_size = len(inputs)
         embeddings = self.dropout(self.embedding(inputs))
         embeddings1 = embeddings.view(len(inputs[0]), batch_size, -1)

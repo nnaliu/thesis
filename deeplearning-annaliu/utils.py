@@ -51,7 +51,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
                 text, label = process_batch(batch)
                 logit = model(text)
 
-            pdb.set_trace()
+            # pdb.set_trace()
 
             label = label - 1
             loss = criterion(logit, label)
