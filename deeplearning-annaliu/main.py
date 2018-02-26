@@ -14,7 +14,10 @@ import data_handler, utils
 import model
 import pdb
 
+torch.manual_seed(1)
+
 USE_CUDA = True if torch.cuda.is_available() else False
+
 
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, help='type of model')
@@ -91,7 +94,7 @@ GuidedBackProp Saliency Analysis
 """
 
 filename = 'cnn_model.sav'
-model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+model = model.CNN(model='multichannel', vocab_size=vocab_size, class_number=2)
 model.load_state_dict(torch.load(filename))
 
 pdb.set_trace()
