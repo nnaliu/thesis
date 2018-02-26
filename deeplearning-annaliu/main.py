@@ -19,8 +19,7 @@ USE_CUDA = True if torch.cuda.is_available() else False
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, default='CNN',
                     help='type of model')
-parser.add_argument('--batch_size', type=int, default=128)
-parser.add_argument('--bptt', type=int, default=128)
+parser.add_argument('--batch_size', type=int, default=512)
 parser.add_argument('--epochs', type=int, default=50)
 args = parser.parse_args()
 

@@ -34,7 +34,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
     model.train()
     criterion = nn.CrossEntropyLoss()
     parameters = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = optim.Adam(parameters, lr=0.001)
+    optimizer = optim.Adam(parameters, lr=0.01)
 
     counter = 0
     for epoch in range(epochs):
