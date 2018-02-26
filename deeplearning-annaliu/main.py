@@ -72,7 +72,7 @@ elif args.model == 'LSTM':
 
 elif args.model == 'LSTMFeatures':
     train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
-    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+    model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
     if USE_CUDA:
         print("USING CUDA")
         model = model.cuda()
