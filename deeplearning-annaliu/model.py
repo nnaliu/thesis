@@ -167,7 +167,7 @@ class LSTMClassifierFeatures(nn.Module):
 
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
-        self.hidden2label = nn.Linear(hidden_dim, label_size)
+        self.hidden2label = nn.Linear(hidden_dim + 4, label_size)
 
     def init_hidden(self, batch_size=128):
         # the first is the hidden h
@@ -198,6 +198,7 @@ class LSTMClassifierFeatures(nn.Module):
         output, hidden = self.lstm(embeddings1, hidden)
         # output: [seq_len x batch x hidden]
         pdb.set_trace()
-        output = torch.cat((output[-1], rt, fav, usr_followers, usr_following), 1)
-        output = self.hidden2label(self.dropout1(output[-1]))
-        return output
+        output = output[-1].type(torch.FloatTensor).cuda() if USE_CUDA else output[-1].type(torch.FloatTensor)
+        result = torch.cat((output, rt, fav, usr_followers, usr_following), 1)
+        result = self.hidden2label(self.dropout1(result))
+        return result
