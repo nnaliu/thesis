@@ -17,8 +17,7 @@ import pdb
 USE_CUDA = True if torch.cuda.is_available() else False
 
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
-parser.add_argument('--model', type=str, default='CNN',
-                    help='type of model')
+parser.add_argument('--model', type=str, help='type of model')
 parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--epochs', type=int, default=50)
 args = parser.parse_args()
@@ -70,6 +69,10 @@ elif args.model == 'LSTM':
     utils.train(model, train_iter, val_iter, 30)
     print("Validation: ", utils.evaluate(model, val_iter))
 
+    # Saving Model
+    filename = 'lstm_model.sav'
+    torch.save(model.state_dict(), filename)
+
 elif args.model == 'LSTMFeatures':
     train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
     model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
@@ -78,3 +81,25 @@ elif args.model == 'LSTMFeatures':
         model = model.cuda()
     utils.train(model, train_iter, val_iter, 30, has_features=True)
     print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+
+    # Saving Model
+    filename = 'lstm_model_features.sav'
+    torch.save(model.state_dict(), filename)
+
+"""
+GuidedBackProp Saliency Analysis
+"""
+
+filename = 'cnn_model.sav'
+model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+model.load_state_dict(torch.load(filename))
+
+pdb.set_trace()
+batch = next(iter(train_iter))
+text, label = utils.process_batch(batch)
+for text_i, label_i in zip(text, label):
+    pdb.set_trace()
+    GBP = utils.GuidedBackProp(model, text_i, label_i - 1)
+    guided_grads = GBP.generate_gradients()
+    pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
+

@@ -80,3 +80,61 @@ def evaluate(model, data_iter, has_features=False):
                 correct += 1
             total += 1
     return correct / total
+
+class GuidedBackprop():
+   
+    def __init__(self, model, inputs, target_class):
+        super(GuidedBackprop, self).__init__()
+        self.model = model
+        self.input = inputs
+        self.target_class = target_class
+
+        self.gradients = None
+
+        self.model.eval()
+        self.update_relus()
+        self.hook_layers()
+
+    def hook_layers(self):
+        def hook_function(module, grad_in, grad_out):
+            self.gradients = grad_in[0]
+
+        first_layer = list(self.model.features._modules.items())[0][1]
+        first_layer.register_backward_hook(hook_function)
+
+    def update_relus(self):
+        """
+        Only return positive gradients
+        """
+        def relu_hook_function(module, grad_in, grad_out):
+            # If there's a negative gradient, change to zero
+            if isinstance(module, ReLU):
+                return (torch.clamp(grad_in[0], min=0.0),)
+        # Loop through layers, hook up ReLUs with relu_hook_function
+        for pos, module in self.model.features._modules.items():
+            if isinstance(module, ReLU):
+                module.register_backward_hook(relu_hook_function)
+
+    def generate_gradients(self):
+        pdb.set_trace()
+        # Forward pass
+        output = self.model(self.inputs)
+        # Zero gradients
+        self.model.zero_grad()
+        # Target for backprop
+        one_hot_output = torch.FloatTensor(1, output.size()[-1]).zero_()
+        one_hot_output[0][self.target_class] = 1
+        # Backward pass
+        output.backward(gradient=one_hot_output)
+        # Convert Pytorch variable to numpy array
+        # [0] to get rid of the first channel (1,3,224,224)
+        gradients_as_arr = self.gradients.data.numpy()[0]
+        return gradients_as_arr
+
+def get_positive_negative_saliency(gradient):
+    pdb.set_trace()
+    pos_saliency = (np.maximum(0, gradient) / gradient.max())
+    neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
+    return pos_saliency, neg_saliency
+
+
