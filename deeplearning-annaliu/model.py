@@ -46,7 +46,6 @@ class CNNClassifier(nn.Module):
         return result
 
     def forward(self, inputs):
-        pdb.set_trace()
         # Pad inputs if less than filter window size
         if inputs.size()[1] <= max(self.filter_windows):
             inputs = F.pad(inputs, (1, math.ceil((max(self.filter_windows)-inputs.size()[1])/2))) # FINISH THIS PADDING
