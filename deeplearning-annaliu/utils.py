@@ -83,7 +83,7 @@ def evaluate(model, data_iter, has_features=False):
     return correct / total
 
 def saliency_map(model, inputs, label, features=None):
-    inputs = Variable(inputs.data, requires_grad=True)
+    # inputs = Variable(inputs.data, requires_grad=True)
 
     if len(inputs.size()) == 1:
         inputs = inputs.unsqueeze(0)
