@@ -105,7 +105,5 @@ batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     pdb.set_trace()
-    GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
-    guided_grads = GBP.generate_gradients()
-    pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
+    utils.saliency_map(model, text_i, label_i)
 

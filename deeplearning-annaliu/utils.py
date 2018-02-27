@@ -81,6 +81,29 @@ def evaluate(model, data_iter, has_features=False):
             total += 1
     return correct / total
 
+def saliency_map(model, inputs, label, features=None):
+    if features:
+        output = model(inputs, features)
+    else:
+        output = model(inputs)
+
+    pdb.set_trace() # figure out what this is doing 
+    output[0][label-1].backward()
+    grads = inputs.grad.data.clamp(min=0)
+    grads.squeeze_()
+    grads.transpose_(0, 1).transpose_(1, 2)
+
+    if USE_CUDA:
+        grads = np.amax(grads.cpu().numpy(), axis=2)
+    else:
+        grads = np.amax(grads.numpy(), axis=2)
+
+    
+
+    GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
+    guided_grads = GBP.generate_gradients()
+    pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
+
 class GuidedBackprop():
    
     def __init__(self, model, inputs, target_class):
