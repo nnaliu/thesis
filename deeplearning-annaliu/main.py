@@ -106,4 +106,3 @@ text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     pdb.set_trace()
     utils.saliency_map(model, text_i, label_i)
-
