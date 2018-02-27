@@ -82,6 +82,9 @@ def evaluate(model, data_iter, has_features=False):
     return correct / total
 
 def saliency_map(model, inputs, label, features=None):
+    if len(inputs.size()) == 1:
+        inputs = inputs.unsqueeze(0)
+
     if features:
         output = model(inputs, features)
     else:
@@ -98,7 +101,7 @@ def saliency_map(model, inputs, label, features=None):
     else:
         grads = np.amax(grads.numpy(), axis=2)
 
-    
+
 
     GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
     guided_grads = GBP.generate_gradients()
