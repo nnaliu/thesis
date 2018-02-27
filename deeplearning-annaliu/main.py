@@ -94,7 +94,10 @@ GuidedBackProp Saliency Analysis
 """
 
 # filename = 'cnn_model.sav'
-# model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+# cnn = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+if USE_CUDA:
+    print("converting to cuda")
+    model = model.cuda()
 # model.load_state_dict(torch.load(filename))
 
 pdb.set_trace()
@@ -102,7 +105,7 @@ batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     pdb.set_trace()
-    GBP = utils.GuidedBackProp(model, text_i, label_i - 1)
+    GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
     guided_grads = GBP.generate_gradients()
     pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
 
