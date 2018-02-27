@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.autograd as autograd
+from torch.autograd import Variable
 import pdb
 
 torch.manual_seed(1)
@@ -82,13 +83,15 @@ def evaluate(model, data_iter, has_features=False):
     return correct / total
 
 def saliency_map(model, inputs, label, features=None):
+    inputs = Variable(inputs.data, requires_grad=True)
+
     if len(inputs.size()) == 1:
         inputs = inputs.unsqueeze(0)
 
     if features:
         output = model(inputs, features)
     else:
-        output = model(inputs)
+        output = model(inputs) # [1 x 2] class 1 and class 2
 
     pdb.set_trace() # figure out what this is doing 
     output[0][label-1].backward()
