@@ -157,8 +157,7 @@ class GuidedBackprop():
         for module_name, module in self.model._modules.items():
             if module_name == self.target_layer:
                 print("Hooking Conv Layer")
-                pdb.set_trace()
-                first_conv_layer = list(module)[0]
+                first_conv_layer = module[0]
                 first_conv_layer.register_backward_hook(hook_function)
 
     def update_relus(self):
