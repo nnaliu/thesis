@@ -203,7 +203,7 @@ def save_saliency_map(gradient, vocab, text):
     # compress = (np.clip((compress - grad_min) / (grad_max - grad_min), 0, 1))
     # gradient_compress = np.expand_dims(compress, axis=0)
 
-    grad1 = np.abs(grad1)
+    grad1 = np.abs(gradient)
     grad1 /= grad1.max()
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     grad1 = np.uint8(grad1 * 255)
