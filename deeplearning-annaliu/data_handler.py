@@ -102,7 +102,7 @@ def read_files(lower=False, vectors=None):
     label.build_vocab(train)
     # What do these mean?
 
-    return train, val, test, len(tweet.vocab)
+    return train, val, test, len(tweet.vocab), tweet
     ####################
 
 # FILL THIS IN

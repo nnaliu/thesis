@@ -190,10 +190,12 @@ class GuidedBackprop():
         output.backward(gradient=one_hot_output)
         # Convert Pytorch variable to numpy array
         # [0] to get rid of the first channel (1,3,224,224)
+        pdb.set_trace()
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
 
 def save_saliency_map(gradient):
+    # gradient: [12 x 256]
     pdb.set_trace()
     compress = np.sum(np.abs(gradient), axis=0)
     grad_max = np.percentile(compress, 99)

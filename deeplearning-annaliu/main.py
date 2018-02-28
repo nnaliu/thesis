@@ -33,7 +33,7 @@ data_handler.prepare_csv()
 url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
 vectors = Vectors('wiki.simple.vec', url=url)
 # vectors=None
-train, val, test, vocab_size = data_handler.read_files(vectors=vectors)
+train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
 # train, text, val = data_handler.restore_dataset(train_examples, val_examples, test_examples)
 print("Vocab size ", vocab_size)
 
@@ -104,7 +104,7 @@ batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     # utils.saliency_map(model, text_i, label_i)
-    print("TEXT: ", text_i)
+    print("TEXT: ", print(" ".join([tweet_vocab.vocab.itos[i] for i in text_i])))
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
     utils.save_saliency_map(guided_grads)
