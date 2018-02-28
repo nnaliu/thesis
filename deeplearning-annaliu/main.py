@@ -104,7 +104,7 @@ batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     # utils.saliency_map(model, text_i, label_i)
-    print("TEXT: ", print(" ".join([tweet_vocab.vocab.itos[i] for i in text_i])))
+    print("TEXT: ", print(" ".join([tweet_vocab.vocab.itos[i.data[0]] for iin text_i])))
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
     utils.save_saliency_map(guided_grads)
