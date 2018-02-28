@@ -1,5 +1,5 @@
-import matplotlib
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pylab as plt
 import numpy as np
 import torchtext 
@@ -193,7 +193,8 @@ class GuidedBackprop():
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
 
-def plot_saliency_map(gradient):
+def save_saliency_map(gradient):
+    pdb.set_trace()
     compress = np.sum(np.abs(gradient), axis=0)
     grad_max = np.percentile(compress, 99)
     grad_min = np.min(compress)
@@ -204,13 +205,17 @@ def plot_saliency_map(gradient):
     gradient_compress /= gradient_compress.max()
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     gradient_compress = np.uint8(gradient_compress * 255)
-    np.save('gradient.txt', gradient_compress)
+    filename = 'gradient'
+    np.save('gradient', gradient_compress)
+    # plot_saliency_map(filename)
 
+def plot_saliency_map(filename):
+    gradients = np.load(filename + '.npy')
     fig = plt.figure()
-    plt.imshow(gradient_compress)
+    plt.imshow(gradients)
+    plt.show()
 
 def get_positive_negative_saliency(gradient):
-    pdb.set_trace()
     pos_saliency = (np.maximum(0, gradient) / gradient.max())
     neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
     return pos_saliency, neg_saliency
