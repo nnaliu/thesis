@@ -82,6 +82,13 @@ def evaluate(model, data_iter, has_features=False):
             total += 1
     return correct / total
 
+def forward_pass_on_convolutions(self, x):
+    conv_output = None
+
+
+
+
+
 def saliency_map(model, inputs, label, features=None):
     # inputs = Variable(inputs.data, requires_grad=True)
 
@@ -94,20 +101,6 @@ def saliency_map(model, inputs, label, features=None):
         output, embedding = model.forward(inputs, test=True) # [1 x 2] class 1 and class 2
 
     # model.zero_grad()
-
-    # New idea!!!
-    pdb.set_trace()
-    approx = nn.Linear(inputs.size(1), 1) # seq_len
-    criterion = nn.CrossEntropyLoss()
-    grads = []
-
-    embedding.squeeze_(0)
-    for i in len(embedding.size(0)):
-        score = approx(embedding[i])
-        loss = criterion(score, label-1)
-        loss.backward()
-        grads.append(loss.grad.data)
-
 
     pdb.set_trace() # figure out what this is doing
     output[0][label-1].backward(gradient=embedding)
@@ -129,6 +122,19 @@ def saliency_map(model, inputs, label, features=None):
     # guided_grads = GBP.generate_gradients()
     # pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
 
+    # New idea!!!
+    # pdb.set_trace()
+    # approx = nn.Linear(inputs.size(1), 1).cuda() if USE_CUDA else nn.Linear(inputs.size(1), 1).cuda() # seq_len
+    # criterion = nn.CrossEntropyLoss()
+    # grads = []
+
+    # embedding = embedding.squeeze(0)
+    # for i in len(embedding.size(0)):
+    #     score = approx(embedding[i])
+    #     loss = criterion(score, label-1)
+    #     loss.backward()
+    #     grads.append(loss.grad.data)
+
 class GuidedBackprop():
    
     def __init__(self, model, inputs, target_class):
@@ -136,19 +142,23 @@ class GuidedBackprop():
         self.model = model
         self.input = inputs
         self.target_class = target_class
+        self.target_layer = 'conv' # other options: embedding2, embedding, dropout, fc
 
         self.gradients = None
 
         self.model.eval()
-        self.update_relus()
+        # self.update_relus()
         self.hook_layers()
 
     def hook_layers(self):
         def hook_function(module, grad_in, grad_out):
             self.gradients = grad_in[0]
 
-        first_layer = list(self.model.features._modules.items())[0][1]
-        first_layer.register_backward_hook(hook_function)
+        for module_name, module in self.model._modules.items():
+            if module_name == self.target_layer:
+                print("Hooking Conv Layer")
+                first_conv_layer = list(module.items())[0]
+                first_conv_layer.register_backward_hook(hook_function)
 
     def update_relus(self):
         """
