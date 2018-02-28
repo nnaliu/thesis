@@ -89,11 +89,25 @@ def saliency_map(model, inputs, label, features=None):
         inputs = inputs.unsqueeze(0)
 
     if features:
-        output, embedding = model(inputs, features, test=True)
+        output, embedding = model.forward(inputs, features, test=True)
     else:
-        output, embedding = model(inputs, test=True) # [1 x 2] class 1 and class 2
+        output, embedding = model.forward(inputs, test=True) # [1 x 2] class 1 and class 2
 
     # model.zero_grad()
+
+    # New idea!!!
+    pdb.set_trace()
+    approx = nn.Linear(inputs.size(1), 1) # seq_len
+    criterion = nn.CrossEntropyLoss()
+    grads = []
+
+    embedding.squeeze_(0)
+    for i in len(embedding.size(0)):
+        score = approx(embedding[i])
+        loss = criterion(score, label-1)
+        loss.backward()
+        grads.append(loss.grad.data)
+
 
     pdb.set_trace() # figure out what this is doing
     output[0][label-1].backward(gradient=embedding)
