@@ -100,13 +100,12 @@ if USE_CUDA:
     model = model.cuda()
 # model.load_state_dict(torch.load(filename))
 
-pdb.set_trace()
 batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
-    pdb.set_trace()
     # utils.saliency_map(model, text_i, label_i)
 
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
+    utils.plot_saliency_map(guided_grads)
 

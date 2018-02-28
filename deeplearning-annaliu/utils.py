@@ -53,8 +53,6 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
                 text, label = process_batch(batch)
                 logit = model(text)
 
-            # pdb.set_trace()
-
             label = label - 1
             loss = criterion(logit, label)
             loss.backward()
@@ -103,7 +101,6 @@ def saliency_map(model, inputs, label, features=None):
 
     # model.zero_grad()
 
-    pdb.set_trace() # figure out what this is doing
     output[0][label-1].backward(gradient=embedding)
     grads = embedding.grad.data.clamp(min=0)
     grads.squeeze_()
