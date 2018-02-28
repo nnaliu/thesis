@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pylab as plt
 import numpy as np
 import torchtext 
@@ -202,6 +204,7 @@ def plot_saliency_map(gradient):
     gradient_compress /= gradient_compress.max()
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     gradient_compress = np.uint8(gradient_compress * 255)
+    np.save('gradient.txt', gradient_compress)
 
     fig = plt.figure()
     plt.imshow(gradient_compress)
