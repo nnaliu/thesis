@@ -107,6 +107,6 @@ for text_i, label_i in zip(text, label):
     pdb.set_trace()
     # utils.saliency_map(model, text_i, label_i)
 
-    GBP = utils.GuidedBackProp(model, text_i, label_1-1)
+    GBP = utils.GuidedBackprop(model, text_i, label_1-1)
     guided_grads = GBP.generate_gradients()
 
