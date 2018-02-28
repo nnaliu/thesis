@@ -1,3 +1,4 @@
+import matplotlib.pylab as plt
 import numpy as np
 import torchtext 
 import torch
@@ -140,7 +141,7 @@ class GuidedBackprop():
     def __init__(self, model, inputs, target_class):
         super(GuidedBackprop, self).__init__()
         self.model = model
-        self.input = inputs
+        self.inputs = inputs
         self.target_class = target_class
         self.target_layer = 'conv' # other options: embedding2, embedding, dropout, fc
 
@@ -176,18 +177,37 @@ class GuidedBackprop():
     def generate_gradients(self):
         pdb.set_trace()
         # Forward pass
+        if len(self.inputs.size()) == 1:
+            self.inputs = self.inputs.unsqueeze(0)
         output = self.model(self.inputs)
         # Zero gradients
         self.model.zero_grad()
         # Target for backprop
         one_hot_output = torch.FloatTensor(1, output.size()[-1]).zero_()
-        one_hot_output[0][self.target_class] = 1
+        one_hot_output[0][self.target_class.data[0]] = 1
+        if USE_CUDA:
+            one_hot_output = one_hot_output.cuda()
         # Backward pass
         output.backward(gradient=one_hot_output)
         # Convert Pytorch variable to numpy array
         # [0] to get rid of the first channel (1,3,224,224)
-        gradients_as_arr = self.gradients.data.numpy()[0]
+        gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
+
+def plot_saliency_map(gradient):
+    compress = np.sum(np.abs(gradient), axis=0)
+    grad_max = np.percentile(compress, 99)
+    grad_min = np.min(compress)
+    compress = (np.clip((compress - grad_min) / (grad_max - grad_min), 0, 1))
+    gradient_compress = np.expand_dims(compress, axis=0)
+
+    gradient_compress = gradient_compress - gradient_compress.min()
+    gradient_compress /= gradient_compress.max()
+    # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
+    gradient_compress = np.uint8(gradient_compress * 255)
+
+    fig = plt.figure()
+    plt.imshow(gradient_compress)
 
 def get_positive_negative_saliency(gradient):
     pdb.set_trace()
