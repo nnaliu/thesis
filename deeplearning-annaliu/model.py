@@ -52,7 +52,7 @@ class CNNClassifier(nn.Module):
         
         max_sent_len = inputs.size(1)
         pdb.set_trace()
-        embedding = self.embedding(inputs).retain_grad() # (batch_size, max_seq_len, embedding_size)
+        embedding = self.embedding(inputs) # (batch_size, max_seq_len, embedding_size)
         embedding = embedding.unsqueeze(1) # (batch_size, 1, max_seq_len, embedding_size)
 
         if self.model == "multichannel":
@@ -64,7 +64,7 @@ class CNNClassifier(nn.Module):
         result = self.fc(self.dropout(torch.cat(result, 1)))
         
         if test:
-            return result.retain_grad(), embedding
+            return result, Variable(embedding.data, requires_grad=True)
         
         return result
 
