@@ -63,7 +63,7 @@ class CNNClassifier(nn.Module):
         result = self.fc(self.dropout(torch.cat(result, 1)))
         
         if test:
-            return result, Variable(embedding.data, requires_grad=True)
+            return Variable(result.data, requires_grad=True), Variable(embedding.data, requires_grad=True)
         
         return result
 

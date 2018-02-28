@@ -95,7 +95,7 @@ def saliency_map(model, inputs, label, features=None):
 
     # model.zero_grad()
 
-    pdb.set_trace() # figure out what this is doing 
+    pdb.set_trace() # figure out what this is doing
     output[0][label-1].backward(gradient=embedding)
     grads = embedding.grad.data.clamp(min=0)
     grads.squeeze_()
