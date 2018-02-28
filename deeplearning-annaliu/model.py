@@ -51,6 +51,7 @@ class CNNClassifier(nn.Module):
             inputs = F.pad(inputs, (1, math.ceil((max(self.filter_windows)-inputs.size()[1])/2))) # FINISH THIS PADDING
         
         max_sent_len = inputs.size(1)
+        pdb.set_trace()
         embedding = self.embedding(inputs) # (batch_size, max_seq_len, embedding_size)
         embedding = embedding.unsqueeze(1) # (batch_size, 1, max_seq_len, embedding_size)
 
@@ -63,7 +64,7 @@ class CNNClassifier(nn.Module):
         result = self.fc(self.dropout(torch.cat(result, 1)))
         
         if test:
-            return result, embedding.retain_grad()
+            return result.retain_grad(), embedding.retain_grad()
         
         return result
 
@@ -126,7 +127,7 @@ class CNNClassifierFeatures(nn.Module):
         result = self.fc(self.dropout(result))
 
         if test:
-            return result, embedding.retain_grad()
+            return result.retain_grad(), embedding.retain_grad()
         
         return result
 
