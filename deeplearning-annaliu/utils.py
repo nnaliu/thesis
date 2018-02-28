@@ -194,21 +194,21 @@ class GuidedBackprop():
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
 
-def save_saliency_map(gradient):
+def save_saliency_map(gradient, vocab, text):
     # gradient: [12 x 256]
     pdb.set_trace()
-    compress = np.sum(np.abs(gradient), axis=0)
-    grad_max = np.percentile(compress, 99)
-    grad_min = np.min(compress)
-    compress = (np.clip((compress - grad_min) / (grad_max - grad_min), 0, 1))
-    gradient_compress = np.expand_dims(compress, axis=0)
+    # compress = np.sum(np.abs(gradient), axis=0)
+    # grad_max = np.percentile(compress, 99)
+    # grad_min = np.min(compress)
+    # compress = (np.clip((compress - grad_min) / (grad_max - grad_min), 0, 1))
+    # gradient_compress = np.expand_dims(compress, axis=0)
 
-    gradient_compress = gradient_compress - gradient_compress.min()
-    gradient_compress /= gradient_compress.max()
+    grad1 = np.abs(grad1)
+    grad1 /= grad1.max()
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
-    gradient_compress = np.uint8(gradient_compress * 255)
+    grad1 = np.uint8(grad1 * 255)
     filename = 'gradient'
-    np.save('gradient', gradient_compress)
+    np.savetxt('gradient.csv', grad1, delimiter=',')
     # plot_saliency_map(filename)
 
 def plot_saliency_map(filename):
