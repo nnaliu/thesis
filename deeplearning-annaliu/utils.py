@@ -89,13 +89,15 @@ def saliency_map(model, inputs, label, features=None):
         inputs = inputs.unsqueeze(0)
 
     if features:
-        output = model(inputs, features)
+        output, embedding = model(inputs, features, test=True)
     else:
-        output = model(inputs) # [1 x 2] class 1 and class 2
+        output, embedding = model(inputs, test=True) # [1 x 2] class 1 and class 2
+
+    # model.zero_grad()
 
     pdb.set_trace() # figure out what this is doing 
-    output[0][label-1].backward()
-    grads = inputs.grad.data.clamp(min=0)
+    output[0][label-1].backward(gradient=embedding)
+    grads = embedding.grad.data.clamp(min=0)
     grads.squeeze_()
     grads.transpose_(0, 1).transpose_(1, 2)
 
@@ -104,11 +106,14 @@ def saliency_map(model, inputs, label, features=None):
     else:
         grads = np.amax(grads.numpy(), axis=2)
 
+    return grads
 
+    # one_hot_output = torch.FloatTensor(1, output.size()[-1]).zero_()
+    # one_hot_output[0][label.data[0]-1] = 1
 
-    GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
-    guided_grads = GBP.generate_gradients()
-    pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
+    # GBP = utils.GuidedBackprop(model, text_i, label_i - 1)
+    # guided_grads = GBP.generate_gradients()
+    # pos_sal, neg_sal = utils.get_positive_negative_saliency(guided_grads)
 
 class GuidedBackprop():
    

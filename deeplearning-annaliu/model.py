@@ -45,7 +45,7 @@ class CNNClassifier(nn.Module):
         result = F.max_pool1d(result_convolution, result_convolution.size(2)).squeeze(2) # (batch_size, out_channel)
         return result
 
-    def forward(self, inputs):
+    def forward(self, inputs, test=False):
         # Pad inputs if less than filter window size
         if inputs.size()[1] <= max(self.filter_windows):
             inputs = F.pad(inputs, (1, math.ceil((max(self.filter_windows)-inputs.size()[1])/2))) # FINISH THIS PADDING
@@ -61,6 +61,10 @@ class CNNClassifier(nn.Module):
         
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
         result = self.fc(self.dropout(torch.cat(result, 1)))
+        
+        if test:
+            return result, embedding
+        
         return result
 
 class CNNClassifierFeatures(nn.Module):
@@ -93,7 +97,7 @@ class CNNClassifierFeatures(nn.Module):
         result = F.max_pool1d(result_convolution, result_convolution.size(2)).squeeze(2) # (batch_size, out_channel)
         return result
 
-    def forward(self, inputs, features):
+    def forward(self, inputs, features, test=False):
         # Pad inputs if less than filter window size
         rt, fav, usr_followers, usr_following = features
         rt = rt.type(torch.FloatTensor).sqrt()
@@ -120,6 +124,10 @@ class CNNClassifierFeatures(nn.Module):
         result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
         result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
         result = self.fc(self.dropout(result))
+
+        if test:
+            return result, embedding
+        
         return result
 
 class LSTMClassifier(nn.Module):
