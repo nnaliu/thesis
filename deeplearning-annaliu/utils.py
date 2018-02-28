@@ -157,7 +157,8 @@ class GuidedBackprop():
         for module_name, module in self.model._modules.items():
             if module_name == self.target_layer:
                 print("Hooking Conv Layer")
-                first_conv_layer = list(module.items())[0]
+                pdb.set_trace()
+                first_conv_layer = list(module)[0]
                 first_conv_layer.register_backward_hook(hook_function)
 
     def update_relus(self):
@@ -169,7 +170,7 @@ class GuidedBackprop():
             if isinstance(module, ReLU):
                 return (torch.clamp(grad_in[0], min=0.0),)
         # Loop through layers, hook up ReLUs with relu_hook_function
-        for pos, module in self.model.features._modules.items():
+        for pos, module in self.model._modules.items():
             if isinstance(module, ReLU):
                 module.register_backward_hook(relu_hook_function)
 
