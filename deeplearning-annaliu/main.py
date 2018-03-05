@@ -108,13 +108,14 @@ for text_i, label_i in zip(text, label):
     # utils.saliency_map(model, text_i, label_i)
     text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
     print("TEXT: ", text_words)
-    print("LABEL: ", label)
+    print("LABEL: ", label_i)
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
 
     metadata = open('metadata' + str(counter) + '.txt', 'w')
     metadata.write(text_words)
-    metadata.write(label_i.data)
+    pdb.set_trace()
+    metadata.write(str(label_i.data))
     metadata.close()
 
     utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
