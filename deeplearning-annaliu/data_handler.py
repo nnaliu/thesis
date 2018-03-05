@@ -112,13 +112,13 @@ def read_files(lower=False, vectors=None):
 #     test = Dataset()
 
 # datasets is a tuple of dataset objects. The first one is the train set
-def get_bucket_iterators(datasets, batch_size, shuffle=True, repeat=False):
+def get_bucket_iterators(datasets, batch_size, shuffle=False, repeat=False):
     train_iter, val_iter, test_iter = data.BucketIterator.splits(
         datasets, batch_size=batch_size, sort_key=lambda x: len(x.text), shuffle=shuffle,
         repeat=False, device=-1)
     return train_iter, val_iter, test_iter
 
-def get_bptt_iterators(datasets, batch_size, bptt=32, shuffle=True, repeat=False):
+def get_bptt_iterators(datasets, batch_size, bptt=32, shuffle=False, repeat=False):
     train_iter, val_iter, test_iter = data.BPTTIterator.splits(
         datasets, batch_size=batch_size, device=-1, shuffle=shuffle, bptt_len=bptt, repeat=False)
     return train_iter, val_iter, test_iter

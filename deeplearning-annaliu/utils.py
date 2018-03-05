@@ -174,7 +174,6 @@ class GuidedBackprop():
                 module.register_backward_hook(relu_hook_function)
 
     def generate_gradients(self):
-        pdb.set_trace()
         # Forward pass
         if len(self.inputs.size()) == 1:
             self.inputs = self.inputs.unsqueeze(0)
@@ -190,13 +189,11 @@ class GuidedBackprop():
         output.backward(gradient=one_hot_output)
         # Convert Pytorch variable to numpy array
         # [0] to get rid of the first channel (1,3,224,224)
-        pdb.set_trace()
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
 
-def save_saliency_map(gradient, vocab, text):
+def save_saliency_map(gradient, vocab, text, label):
     # gradient: [12 x 256]
-    pdb.set_trace()
     # compress = np.sum(np.abs(gradient), axis=0)
     # grad_max = np.percentile(compress, 99)
     # grad_min = np.min(compress)
@@ -207,12 +204,18 @@ def save_saliency_map(gradient, vocab, text):
     grad1 /= grad1.max()
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     grad1 = np.uint8(grad1 * 255)
+
+    pdb.set_trace()
+    # For the excel file visualization
+    np.insert(grad1, text.t_(), 0, axis=1)
+    np.insert(grad1, label, 0, axis=1)
+
     filename = 'gradient'
-    np.savetxt('gradient.csv', grad1, delimiter=',')
+    np.savetxt(filename + '.csv', grad1, delimiter=',')
     # plot_saliency_map(filename)
 
 def plot_saliency_map(filename):
-    gradients = np.load(filename + '.npy')
+    gradients = np.loadtxt(filename + '.csv')
     fig = plt.figure()
     plt.imshow(gradients)
     plt.show()

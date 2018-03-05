@@ -25,7 +25,8 @@ class CNNClassifier(nn.Module):
         self.class_number = class_number
         self.filter_windows = filter_windows
         self.in_channel = 1
-        self.out_channel = feature_maps
+        # self.out_channel = feature_maps
+        self.out_channel = 50
         self.model = model
 
         if model == "static":
