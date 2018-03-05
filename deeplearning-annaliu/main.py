@@ -107,7 +107,7 @@ text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     # utils.saliency_map(model, text_i, label_i)
     text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
-    print("TEXT: ", print(text_words)
+    print("TEXT: ", text_words)
     print("LABEL: ", label)
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
