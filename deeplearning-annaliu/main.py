@@ -114,7 +114,7 @@ for text_i, label_i in zip(text, label):
 
     metadata = open('metadata' + str(counter) + '.txt', 'w')
     metadata.write(text_words)
-    metadata.write(label)
+    metadata.write(label_i.data)
     metadata.close()
 
     utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
