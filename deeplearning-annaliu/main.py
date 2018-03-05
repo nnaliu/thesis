@@ -1,5 +1,6 @@
 import argparse
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 import torch
 import torch.autograd as autograd
@@ -100,14 +101,23 @@ if USE_CUDA:
     model = model.cuda()
 # model.load_state_dict(torch.load(filename))
 
+counter = 0
 batch = next(iter(train_iter))
 text, label = utils.process_batch(batch)
 for text_i, label_i in zip(text, label):
     # utils.saliency_map(model, text_i, label_i)
-    print("TEXT: ", print(" ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])))
+    text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
+    print("TEXT: ", print(text_words)
     print("LABEL: ", label)
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
-    utils.save_saliency_map(guided_grads, tweet_vocab, text_i, label_i)
+
+    metadata = open('metadata' + str(counter) + '.txt', 'w')
+    metadata.write(text_words)
+    metadata.write(label)
+    metadata.close()
+
+    utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
+    counter += 1
     pdb.set_trace()
 

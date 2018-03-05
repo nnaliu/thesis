@@ -192,7 +192,7 @@ class GuidedBackprop():
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
         return gradients_as_arr
 
-def save_saliency_map(gradient, vocab, text, label):
+def save_saliency_map(counter, gradient, vocab, text, label):
     # gradient: [12 x 256]
     # compress = np.sum(np.abs(gradient), axis=0)
     # grad_max = np.percentile(compress, 99)
@@ -205,16 +205,11 @@ def save_saliency_map(gradient, vocab, text, label):
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     grad1 = np.uint8(grad1 * 255)
 
-    pdb.set_trace()
-    # For the excel file visualization
-    np.insert(grad1, text.t_(), 0, axis=1)
-    np.insert(grad1, label, 0, axis=1)
-
-    filename = 'gradient'
+    filename = 'gradient' + str(counter)
     np.savetxt(filename + '.csv', grad1, delimiter=',')
     # plot_saliency_map(filename)
 
-def plot_saliency_map(filename):
+def plot_saliency_map(filename, metadata):
     gradients = np.loadtxt(filename + '.csv')
     fig = plt.figure()
     plt.imshow(gradients)
