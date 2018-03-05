@@ -112,9 +112,8 @@ for text_i, label_i in zip(text, label):
     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
     guided_grads = GBP.generate_gradients()
 
-    metadata = open('metadata' + str(counter) + '.txt', 'w')
+    metadata = open('data/metadata' + str(counter) + '.txt', 'w')
     metadata.write(text_words)
-    pdb.set_trace()
     metadata.write(str(label_i.data))
     metadata.close()
 
