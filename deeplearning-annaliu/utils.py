@@ -205,7 +205,7 @@ def save_saliency_map(counter, gradient, vocab, text, label):
     # gradient_compress = np.uint8(gradient_compress * 255).transpose(1, 2, 0)
     grad1 = np.uint8(grad1 * 255)
 
-    filename = 'data/gradient' + str(counter)
+    filename = './data/gradient' + str(counter)
     np.savetxt(filename + '.csv', grad1, delimiter=',')
     # plot_saliency_map(filename)
 
