@@ -1,4 +1,5 @@
 import numpy as np
+import gensim
 import pdb
 
 # Cite https://github.com/williamleif/histwords
