@@ -11,7 +11,7 @@ import pdb
 
 my_model_filename = 'my_model.bin'
 if os.path.exists(my_model_filename):
-	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
+	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=False)
 else:
 	seq = []
 	with open('cache/all_tweets.csv', 'r') as f:
