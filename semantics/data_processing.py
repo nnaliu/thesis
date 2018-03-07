@@ -4,6 +4,9 @@ import pandas as pd
 import pickle
 import preprocessor as p
 import pdb
+import joblib
+import pymongo
+
 
 tweet_folder = '../user-tweets/'
 
@@ -20,6 +23,19 @@ def preprocess(s, lowercase=False):
       tokens = [token.strip().translate(table) for token in tokens_raw]
     return tokens
 
+def import_data():
+    # hate_speech_users = joblib.load('../Data/hs_users.plk.compressed')
+    # hate_speech_users.to_csv("../Data/semantic_data/hate_speech_users.csv", index=False, index_label=False, encoding='utf-8')
+    dstormer = joblib.load('../Data/dstormer.plk.compressed')
+    with open('cache/dstormer.csv', 'a') as f:
+        dstormer['preprocessed_txt'] = dstormer['preprocessed_txt'].apply(lambda x: preprocess(str(x), lowercase=True))
+        text = dstormer['preprocessed_txt'].values.tolist()
+        writer = csv.writer(f)
+        writer.writerows(text)
+
+    # dstormer.to_csv("../Data/semantic_data/dstormer.csv", index=False, index_label=False, encoding='utf-8')
+    return dstormer #, hate_speech_users
+
 def import_tweets(tweet_folder):
     with open('cache/all_tweets.csv', 'a') as f:
         for i, filename in enumerate(os.listdir(tweet_folder)):
@@ -33,4 +49,5 @@ def import_tweets(tweet_folder):
             if i % 500 == 0:
                 print("Processing user #" + str(i))
 
-import_tweets(tweet_folder)
+# import_tweets(tweet_folder)
+import_data()
