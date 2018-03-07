@@ -64,6 +64,9 @@ def intersection_align_gensim(m1,m2, words=None):
 	for m in [m1,m2]:
 		# Replace old syn0norm array with new one (with common vocab)
 		indices = [m.vocab[w].index for w in common_vocab]
+
+		pdb.set_trace()
+		
 		old_arr = m.syn0norm
 		new_arr = np.array([old_arr[index] for index in indices])
 		m.syn0norm = m.syn0 = new_arr
