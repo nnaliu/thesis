@@ -18,7 +18,7 @@ seq = seq[0]
 
 my_model_filename = 'my_model.bin'
 if os.path.exists(my_model_filename):
-	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
+	my_model = KeyedVectors.load(my_model_filename)
 else:
 	my_model = Word2Vec(seq, size=300, window=5, min_count=1, workers=4)
 	print(my_model)
@@ -27,7 +27,7 @@ else:
 	my_model.wv.save_word2vec_format(my_model_filename)
 
 if os.path.exists('my_model_aligned.bin'):
-	my_model_aligned = KeyedVectors.load_word2vec_format('my_model_aligned.bin', binary=True)
+	my_model_aligned = KeyedVectors.load('my_model_aligned.bin')
 else:
 	glove_filename = '../deeplearning-annaliu/.vector_cache/glove.840B.300d.txt'
 	gmodel = KeyedVectors.load_word2vec_format(glove_filename, binary=False)
