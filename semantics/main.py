@@ -10,13 +10,13 @@ import preprocessor as p
 import align
 import pdb
 
-my_model_filename = 'my_model_dstormer.bin'
+my_model_filename = 'my_model.bin'
 if os.path.exists(my_model_filename):
 	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
 	my_model.init_sims()
 else:
 	seq = []
-	with open('cache/dstormer.csv', 'r') as f:
+	with open('cache/all_tweets.csv', 'r') as f:
 		reader = csv.reader(f)
 		seq.append(list(word for word in reader))
 	seq = seq[0]
@@ -26,7 +26,7 @@ else:
 	print("Num words:", len(words))
 	my_model.wv.save_word2vec_format(my_model_filename, binary=True)
 
-my_model_aligned_filename = 'my_model_dstormer_aligned.bin'
+my_model_aligned_filename = 'my_model_aligned.bin'
 if os.path.exists(my_model_aligned_filename):
 	my_model_aligned = Word2Vec.load(my_model_aligned_filename)
 else:

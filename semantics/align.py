@@ -71,8 +71,6 @@ def intersection_align_gensim(m1,m2, words=None):
 		old_arr = m.syn0norm
 		new_arr = np.array([old_arr[index] for index in indices])
 		m.syn0norm = m.syn0 = new_arr
-
-		pdb.set_trace()
 		# Replace old vocab dictionary with new one (with common vocab)
 		# and old index2word with new one
 		m.index2word = common_vocab
