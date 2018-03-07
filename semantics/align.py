@@ -1,4 +1,5 @@
 import numpy as np
+import pdb
 
 # Cite https://github.com/williamleif/histwords
 # Cite https://gist.github.com/quadrismegistus/09a93e219a6ffc4f216fb85235535faf
@@ -66,7 +67,7 @@ def intersection_align_gensim(m1,m2, words=None):
 		indices = [m.vocab[w].index for w in common_vocab]
 
 		pdb.set_trace()
-		
+
 		old_arr = m.syn0norm
 		new_arr = np.array([old_arr[index] for index in indices])
 		m.syn0norm = m.syn0 = new_arr
