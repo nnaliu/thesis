@@ -1,3 +1,5 @@
+import numpy as np
+
 # Cite https://github.com/williamleif/histwords
 # Cite https://gist.github.com/quadrismegistus/09a93e219a6ffc4f216fb85235535faf
 
@@ -61,19 +63,19 @@ def intersection_align_gensim(m1,m2, words=None):
 	# Then for each model...
 	for m in [m1,m2]:
 		# Replace old syn0norm array with new one (with common vocab)
-		indices = [m.vocab[w].index for w in common_vocab]
-		old_arr = m.syn0norm
+		indices = [m.wv.vocab[w].index for w in common_vocab]
+		old_arr = m.wv.syn0norm
 		new_arr = np.array([old_arr[index] for index in indices])
-		m.syn0norm = m.syn0 = new_arr
+		m.wv.syn0norm = m.syn0 = new_arr
 
 		# Replace old vocab dictionary with new one (with common vocab)
 		# and old index2word with new one
 		m.index2word = common_vocab
-		old_vocab = m.vocab
+		old_vocab = m.wv.vocab
 		new_vocab = {}
 		for new_index,word in enumerate(common_vocab):
 			old_vocab_obj=old_vocab[word]
 			new_vocab[word] = gensim.models.word2vec.Vocab(index=new_index, count=old_vocab_obj.count)
-		m.vocab = new_vocab
+		m.wv.vocab = new_vocab
 
 	return (m1,m2)

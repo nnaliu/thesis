@@ -1,5 +1,6 @@
 import csv
 import os
+import numpy as np
 import gensim
 from gensim.models import Word2Vec, KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
