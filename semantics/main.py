@@ -13,6 +13,7 @@ import pdb
 my_model_filename = 'my_model_dstormer.bin'
 if os.path.exists(my_model_filename):
 	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
+	my_model.init_sims()
 else:
 	seq = []
 	with open('cache/dstormer.csv', 'r') as f:
@@ -32,7 +33,6 @@ else:
 	google_filename = 'GoogleNews-vectors-negative300.bin'
 	print("Reading Google")
 	gmodel = KeyedVectors.load_word2vec_format(google_filename, binary=True)
-
-	pdb.set_trace()
 	my_model_aligned = align.smart_procrustes_align_gensim(gmodel, my_model)
 	my_model_aligned.wv.save_word2vec_format(my_model_aligned_filename, binary=True)
+

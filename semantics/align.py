@@ -17,6 +17,8 @@ def smart_procrustes_align_gensim(base_embed, other_embed, words=None):
 	"""
 
 	# make sure vocabulary and indices are aligned
+	base_embed.init_sims()
+	other_embed.init_sims()
 	in_base_embed, in_other_embed = intersection_align_gensim(base_embed, other_embed, words=words)
 
 	# get the embedding matrices
@@ -66,13 +68,11 @@ def intersection_align_gensim(m1,m2, words=None):
 	for m in [m1,m2]:
 		# Replace old syn0norm array with new one (with common vocab)
 		indices = [m.vocab[w].index for w in common_vocab]
-
-		pdb.set_trace()
-
 		old_arr = m.syn0norm
 		new_arr = np.array([old_arr[index] for index in indices])
 		m.syn0norm = m.syn0 = new_arr
 
+		pdb.set_trace()
 		# Replace old vocab dictionary with new one (with common vocab)
 		# and old index2word with new one
 		m.index2word = common_vocab
