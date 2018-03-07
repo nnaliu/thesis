@@ -28,6 +28,7 @@ args = parser.parse_args()
 
 # Need to figure out how to not have headers writing to file in middle (Ctrl+F 'retweet_count')
 data_handler.prepare_csv()
+print("Finished preparing CSV")
 
 # Word embeddings
 vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
