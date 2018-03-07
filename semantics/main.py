@@ -9,17 +9,15 @@ import preprocessor as p
 import align
 import pdb
 
-seq = []
-with open('cache/all_tweets.csv', 'r') as f:
-	reader = csv.reader(f)
-	seq.append(list(word for word in reader))
-
-seq = seq[0]
-
 my_model_filename = 'my_model.bin'
 if os.path.exists(my_model_filename):
-	my_model = Word2Vec.load(my_model_filename)
+	my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
 else:
+	seq = []
+	with open('cache/all_tweets.csv', 'r') as f:
+		reader = csv.reader(f)
+		seq.append(list(word for word in reader))
+	seq = seq[0]
 	my_model = Word2Vec(seq, size=300, window=5, min_count=1, workers=4)
 	print(my_model)
 	words = list(my_model.wv.vocab)
