@@ -97,7 +97,7 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
         path='cache/tweets_data.csv', format='csv', skip_header=True,
         fields=fields
     )
-    tweet.build_vocab(all_tweets)
+    tweet.build_vocab(all_tweets, vectors=vectors)
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
 
@@ -107,8 +107,7 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
             train = data.Dataset(list(tweet_exp[train_idx]), fields)
             val = data.Dataset(list(tweet_exp[val_idx]), fields)
             yield (train, val,)
-    temp = iter_folds()
-    return temp, len(tweet.vocab), tweet
+    return iter_folds(), len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):
