@@ -83,7 +83,6 @@ def evaluate(model, data_iter, has_features=False):
         preds.append(argmax.data[0])
         true.append(label.sub_(1).data[0])
 
-    pdb.set_trace()
     p, r, f1, s = precision_recall_fscore_support(true, preds, average='weighted')
     p1, r1, f11, s1 = precision_recall_fscore_support(true, preds, average='micro')
 
