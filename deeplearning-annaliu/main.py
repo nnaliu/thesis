@@ -49,7 +49,6 @@ for fold, (train, val) in enumerate(train_val_generator):
     p_avg, r_avg, f1_avg = 0., 0., 0.
     p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
-
     if args.model == 'CNN':
         model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
         if USE_CUDA:
@@ -63,6 +62,7 @@ for fold, (train, val) in enumerate(train_val_generator):
         p1_avg += p1
         r1_avg += r1
         f11_avg += f11
+        pdb.set_trace()
 
         # print("Validation: ", utils.evaluate(model, val_iter))
 

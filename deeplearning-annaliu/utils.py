@@ -48,13 +48,14 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
         total_loss = 0
         for batch in data_iter:
             model.zero_grad()
-
             if has_features:
                 text, label, features = process_batch2(batch)
                 logit = model(text, features)
             else:
                 text, label = process_batch(batch)
                 logit = model(text)
+
+            pdb.set_trace()
 
             label = label - 1
             loss = criterion(logit, label)
@@ -68,7 +69,8 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
 
 def evaluate(model, data_iter, has_features=False):
     model.eval()
-    correct, total = 0., 0.
+    preds = []
+    true = []
     for batch in data_iter:
         if has_features:
             text, label, features = process_batch2(batch)
@@ -78,10 +80,15 @@ def evaluate(model, data_iter, has_features=False):
             probs = model(text)
 
         _, argmax = probs.max(1)
-        label.sub_(1)
+        # label.sub_(1)
 
-        p, r, f1, s = precision_recall_fscore_support(label.data, argmax.data, average='weighted')
-        p1, r1, f11, s1 = precision_recall_fscore_support(label.data, argmax.data, average='micro')
+        pdb.set_trace()
+        preds.append(argmax.data)
+        true.append(label.sub_(1).data)
+
+    pdb.set_trace()
+    p, r, f1, s = precision_recall_fscore_support(true, preds, average='weighted')
+    p1, r1, f11, s1 = precision_recall_fscore_support(true, preds, average='micro')
 
     return p, r, f1, p1, r1, f11
 
