@@ -100,12 +100,10 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
     tweet.build_vocab(all_tweets)
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
-    pdb.set_trace()
 
     kf = KFold(n_splits=n_folds, random_state=seed)
     def iter_folds():
         for train_idx, val_idx in kf.split(tweet_exp):
-            pdb.set_trace()
             train = data.Dataset(list(tweet_exp[train_idx]), fields)
             val = data.Dataset(list(tweet_exp[val_idx]), fields)
             yield (train, val,)
