@@ -93,15 +93,18 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
         ('hate_label', label),
     ]
 
+    tweets_arr = np.array(tweets)
+    all_tweets = data.TabularDataset(tweets_arr, fields=fields)
+    tweet.build_vocab(all_tweets)
+    label.build_vocab(all_tweets)
+
     kf = KFold(n_splits=n_folds, random_state=seed)
     def iter_folds():
-        tweets_arr = np.array(tweets)
         for train_idx, val_idx in kf.split(tweets_arr):
-            yield (
-                data.Dataset(tweets_arr[train_idx], fields),
-                data.Dataset(tweets_arr[val_idx], fields),
-            )
-    return iter_folds()
+            train = data.Dataset(tweets_arr[train_idx], fields)
+            val = data.Dataset(tweets_arr[val_idx], fields)
+            yield (train, val,)
+    return iter_folds(), len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):
