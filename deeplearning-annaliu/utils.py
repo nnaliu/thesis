@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.autograd as autograd
 from torch.autograd import Variable
+from sklearn.metrics import precision_recall_fscore_support
 import pdb
 
 torch.manual_seed(1)
@@ -61,8 +62,8 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             nn.utils.clip_grad_norm(parameters, max_norm=2)
             optimizer.step()
             total_loss += loss.data
-        if counter % 10 == 0:
-            print("Validation: ", evaluate(model, val_iter, has_features))
+        # if counter % 10 == 0:
+        #     print("Validation: ", evaluate(model, val_iter, has_features))
         print(str(epoch) + " loss = " + str(total_loss)) # Find a better print statement
 
 def evaluate(model, data_iter, has_features=False):
@@ -77,11 +78,12 @@ def evaluate(model, data_iter, has_features=False):
             probs = model(text)
 
         _, argmax = probs.max(1)
-        for i, predicted in enumerate(list(argmax.data)):
-            if predicted+1 == label[i].data[0]:
-                correct += 1
-            total += 1
-    return correct / total
+        label.sub_(1)
+
+        p, r, f1, s = precision_recall_fscore_support(label.data, argmax.data, average='weighted')
+        p1, r1, f11, s1 = precision_recall_fscore_support(label.data, argmax.data, average='micro')
+
+    return p, r, f1, p1, r1, f11
 
 def forward_pass_on_convolutions(self, x):
     conv_output = None

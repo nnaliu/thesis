@@ -45,6 +45,9 @@ train_val_generator = get_dataset(tweet_data, lower=True, vectors=vectors, n_fol
 
 for fold, (train, val) in enumerate(train_val_generator):
     train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+    p_avg, r_avg, f1_avg = 0., 0., 0.
+    p1_avg, r1_avg, f11_avg = 0., 0., 0.
+
 
     if args.model == 'CNN':
         model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
@@ -52,7 +55,15 @@ for fold, (train, val) in enumerate(train_val_generator):
             print("USING CUDA")
             model = model.cuda()
         utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
-        print("Validation: ", utils.evaluate(model, val_iter))
+        p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+        p_avg += p
+        r_avg += r
+        f1_avg += f1
+        p1_avg += p1
+        r1_avg += r1
+        f11_avg += f11
+
+        # print("Validation: ", utils.evaluate(model, val_iter))
 
     elif args.model == "CNNFeatures":
         model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
@@ -60,7 +71,13 @@ for fold, (train, val) in enumerate(train_val_generator):
             print("USING CUDA")
             model = model.cuda()
         utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
-        print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+        p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
+        p_avg += p
+        r_avg += r
+        f1_avg += f1
+        p1_avg += p1
+        r1_avg += r1
+        f11_avg += f11
 
     elif args.model == 'LSTM':
         model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
@@ -77,6 +94,16 @@ for fold, (train, val) in enumerate(train_val_generator):
             model = model.cuda()
         utils.train(model, train_iter, val_iter, 30, has_features=True)
         print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+
+    print "macro results are"
+    print "average precision is %f" %(p_avg/N_FOLDS)
+    print "average recall is %f" %(r_avg/N_FOLDS)
+    print "average f1 is %f" %(f1_avg/N_FOLDS)
+
+    print "micro results are"
+    print "average precision is %f" %(p1_avg/N_FOLDS)
+    print "average recall is %f" %(r1_avg/N_FOLDS)
+    print "average f1 is %f" %(f11_avg/N_FOLDS)
 
 # Saving Model
 if args.model == "CNN":
