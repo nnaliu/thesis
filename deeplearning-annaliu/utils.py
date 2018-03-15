@@ -67,8 +67,12 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
 
 def evaluate(model, data_iter, has_features=False):
     model.eval()
-    preds = []
-    true = []
+    preds = torch.LongTensor()
+    true = torch.LongTensor()
+    if USE_CUDA:
+        preds = preds.cuda()
+        true = true.cuda()
+
     for batch in data_iter:
         if has_features:
             text, label, features = process_batch2(batch)
@@ -81,8 +85,8 @@ def evaluate(model, data_iter, has_features=False):
         # label.sub_(1)
 
         pdb.set_trace()
-        preds.append(argmax.data[0])
-        true.append(label.sub_(1).data[0])
+        preds = torch.cat((preds, argmax.data))
+        true = torch.cat((true, label.sub_(1).data))
 
     p, r, f1, s = precision_recall_fscore_support(true, preds, average='weighted')
     p1, r1, f11, s1 = precision_recall_fscore_support(true, preds, average='micro')
