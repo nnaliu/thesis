@@ -93,7 +93,6 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
         ('hate_label', label),
     ]
 
-    tweets_arr = np.array(tweets)
     all_tweets = data.TabularDataset(
         path='cache/tweets_data.csv', format='csv', skip_header=True,
         fields=fields
@@ -103,6 +102,8 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
 
     kf = KFold(n_splits=n_folds, random_state=seed)
     def iter_folds():
+        tweets_arr = np.array(tweets)
+        pdb.set_trace()
         for train_idx, val_idx in kf.split(tweets_arr):
             train = data.Dataset(tweets_arr[train_idx], fields)
             val = data.Dataset(tweets_arr[val_idx], fields)
