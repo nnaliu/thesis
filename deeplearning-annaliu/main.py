@@ -48,12 +48,21 @@ print("Vocab size ", vocab_size)
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
-if args.use:
-    model = load_state_dict(torch.load(args.use))
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
+if args.model == 'CNN':
+    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+elif args.model == 'CNNFeatures':
+    model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
+elif args.model == 'LSTM':
+    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+elif args.model == 'LSTMFeatures':
+    model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
 
+if USE_CUDA:
+    print("USING CUDA")
+    model = model.cuda()
+
+if args.use:
+    model.load_state_dict(torch.load(args.use))
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
@@ -64,21 +73,7 @@ if args.use:
         p1_avg += p1
         r1_avg += r1
         f11_avg += f11
-
 else:
-    if args.model == 'CNN':
-        model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-    elif args.model == 'CNNFeatures':
-        model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
-    elif args.model == 'LSTM':
-        model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
-    elif args.model == 'LSTMFeatures':
-        model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
-
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
-
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
