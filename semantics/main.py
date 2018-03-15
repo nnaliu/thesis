@@ -36,3 +36,13 @@ else:
 	my_model_aligned = align.smart_procrustes_align_gensim(gmodel, my_model)
 	my_model_aligned.wv.save_word2vec_format(my_model_aligned_filename, binary=True)
 
+
+def compare_word(word, gmodel, aligned_model):
+	g_word = gmodel.get_vector(word)
+	a_word - aligned_model.get_vector(word)
+	cos = nn.CosineSimilarity(dim=1, eps=1e-6) # I have no idea if this is right
+	output = cos(g_word, a_word)
+
+
+
+

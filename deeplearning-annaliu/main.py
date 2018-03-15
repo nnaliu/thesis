@@ -19,7 +19,6 @@ torch.manual_seed(1)
 
 USE_CUDA = True if torch.cuda.is_available() else False
 
-
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, help='type of model')
 parser.add_argument('--batch_size', type=int, default=128)
@@ -36,7 +35,6 @@ url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
 vectors = Vectors('wiki.simple.vec', url=url)
 # vectors=None
 train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
-pdb.set_trace()
 # train, text, val = data_handler.restore_dataset(train_examples, val_examples, test_examples)
 print("Vocab size ", vocab_size)
 
@@ -47,7 +45,18 @@ if args.model == 'CNN':
         print("USING CUDA")
         model = model.cuda()
     utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
-    print("Validation: ", utils.evaluate(model, val_iter))
+    p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+    print("Validation (CNN):")
+
+    print('WEIGHTED RESULTS')
+    print('average precision is ' + str(p))
+    print('average recall is ' + str(r))
+    print('average f1 is ' + str(f1))
+
+    print('MICRO RESULTS')
+    print('average precision is ' + str(p1))
+    print('average recall is ' + str(r1))
+    print('average f1 is ' + str(f11))
 
     # Saving Model
     filename = 'cnn_model.sav'
@@ -60,7 +69,18 @@ elif args.model == "CNNFeatures":
         print("USING CUDA")
         model = model.cuda()
     utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
-    print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+    p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
+    print("Validation (CNNFeatures):")
+
+    print('WEIGHTED RESULTS')
+    print('average precision is ' + str(p))
+    print('average recall is ' + str(r))
+    print('average f1 is ' + str(f1))
+
+    print('MICRO RESULTS')
+    print('average precision is ' + str(p1))
+    print('average recall is ' + str(r1))
+    print('average f1 is ' + str(f11))
 
     # Saving Model
     filename = 'cnn_model_features.sav'

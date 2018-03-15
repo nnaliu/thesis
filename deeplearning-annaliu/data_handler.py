@@ -5,6 +5,7 @@ from gensim.parsing.preprocessing import STOPWORDS
 import pandas as pd
 import preprocessor as p
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 from joblib import Memory
 import torch
 import torch.autograd as autograd
