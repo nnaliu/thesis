@@ -95,15 +95,15 @@ for fold, (train, val) in enumerate(train_val_generator):
         utils.train(model, train_iter, val_iter, 30, has_features=True)
         print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
 
-    print "macro results are"
-    print "average precision is %f" %(p_avg/N_FOLDS)
-    print "average recall is %f" %(r_avg/N_FOLDS)
-    print "average f1 is %f" %(f1_avg/N_FOLDS)
+    print('WEIGHTED RESULTS')
+    print('average precision is ' + str(p_avg/N_FOLDS))
+    print('average recall is ' + str(r_avg/N_FOLDS))
+    print('average f1 is ' + str(f1_avg/N_FOLDS))
 
-    print "micro results are"
-    print "average precision is %f" %(p1_avg/N_FOLDS)
-    print "average recall is %f" %(r1_avg/N_FOLDS)
-    print "average f1 is %f" %(f11_avg/N_FOLDS)
+    print('MICRO RESULTS')
+    print('average precision is ' + str(p1_avg/N_FOLDS))
+    print('average recall is ' + str(r1_avg/N_FOLDS))
+    print('average f1 is ' + str(f11_avg/N_FOLDS))
 
 # Saving Model
 if args.model == "CNN":
