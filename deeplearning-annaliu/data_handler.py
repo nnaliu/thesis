@@ -54,15 +54,53 @@ def prepare_csv():
     tweet_data = pd.read_csv(file_path, encoding='utf-8') # names=columns,
     tweet_data['text'] = tweet_data['text'].apply(lambda x: preprocess(str(x), lowercase=True))
     tweet_data['hate_label'] = tweet_data['hate_label'].apply(lambda x: hate_label[x] if x in hate_label else 0)
-    # tweet_data = pd.DataFrame([preprocess(tweet, lowercase=True) for tweet in tweet_data.text])
-    train, test = train_test_split(tweet_data, test_size=0.2)
-    print(train.shape, test.shape)
-    # Get validation dataset as well
-    train, val = train_test_split(train, test_size=0.1, random_state=1)
 
-    train.to_csv("cache/tweets_train.csv", index=False, index_label=False, encoding='utf-8')
-    val.to_csv("cache/tweets_val.csv", index=False, index_label=False, encoding='utf-8')
-    test.to_csv("cache/tweets_test.csv", index=False, index_label=False, encoding='utf-8')
+    # train, test = train_test_split(tweet_data, test_size=0.2)
+    # print(train.shape, test.shape)
+    # # Get validation dataset as well
+    # train, val = train_test_split(train, test_size=0.1, random_state=1)
+
+    # train.to_csv("cache/tweets_train.csv", index=False, index_label=False, encoding='utf-8')
+    # val.to_csv("cache/tweets_val.csv", index=False, index_label=False, encoding='utf-8')
+    # test.to_csv("cache/tweets_test.csv", index=False, index_label=False, encoding='utf-8')
+
+    tweet_data.to_csv("cache/tweets_data.csv", index=False, index_label=False, encoding='utf-8')
+    return tweet_data
+
+
+def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
+    lower = True if vectors is not None else False
+    # tweet = data.Field(sequential=False, tensor_type=torch.LongTensor, lower=lower)
+    tweet = data.Field(sequential=True)
+    label = data.Field(sequential=False)
+    # label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    retweet_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    favorite_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_following_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    fields = [
+        ('id', None),
+        ('created_at', None),
+        ('text', tweet),
+        ('retweet_count', retweet_count),
+        ('favorite_count', favorite_count),
+        ('user_screen_name', None),
+        ('user_id', None),
+        ('user_followers_count', user_followers_count),
+        ('user_following_count', user_following_count),
+        ('hate_label', label),
+    ]
+
+    kf = KFold(n_splits=n_folds, random_state=seed)
+    def iter_folds():
+        tweets_arr = np.array(tweets)
+        for train_idx, val_idx in kf.split(tweets_arr):
+            yield (
+                data.Dataset(tweets_arr[train_idx], fields),
+                data.Dataset(tweets_arr[val_idx], fields),
+            )
+    return iter_folds()
+
 
 def read_files(lower=False, vectors=None):
     #############################
@@ -88,6 +126,7 @@ def read_files(lower=False, vectors=None):
         ('user_following_count', user_following_count),
         ('hate_label', label),
     ]
+    
     train, val = data.TabularDataset.splits(
         path='cache/', format='csv', skip_header=True,
         train='tweets_train.csv', validation='tweets_val.csv',
@@ -113,12 +152,7 @@ def read_files(lower=False, vectors=None):
 
 # datasets is a tuple of dataset objects. The first one is the train set
 def get_bucket_iterators(datasets, batch_size, shuffle=False, repeat=False):
-    train_iter, val_iter, test_iter = data.BucketIterator.splits(
+    train_iter, val_iter = data.BucketIterator.splits(
         datasets, batch_size=batch_size, sort_key=lambda x: len(x.text), shuffle=shuffle,
         repeat=False, device=-1)
-    return train_iter, val_iter, test_iter
-
-def get_bptt_iterators(datasets, batch_size, bptt=32, shuffle=False, repeat=False):
-    train_iter, val_iter, test_iter = data.BPTTIterator.splits(
-        datasets, batch_size=batch_size, device=-1, shuffle=shuffle, bptt_len=bptt, repeat=False)
-    return train_iter, val_iter, test_iter
+    return train_iter, val_iter

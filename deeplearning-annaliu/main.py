@@ -18,6 +18,7 @@ import pdb
 torch.manual_seed(1)
 
 USE_CUDA = True if torch.cuda.is_available() else False
+N_FOLDS = 10
 
 
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
@@ -27,7 +28,7 @@ parser.add_argument('--epochs', type=int, default=50)
 args = parser.parse_args()
 
 # Need to figure out how to not have headers writing to file in middle (Ctrl+F 'retweet_count')
-data_handler.prepare_csv()
+tweet_data = data_handler.prepare_csv()
 print("Finished preparing CSV")
 
 # Word embeddings
@@ -35,62 +36,58 @@ print("Finished preparing CSV")
 url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
 vectors = Vectors('wiki.simple.vec', url=url)
 # vectors=None
-train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
-pdb.set_trace()
-# train, text, val = data_handler.restore_dataset(train_examples, val_examples, test_examples)
-print("Vocab size ", vocab_size)
 
-if args.model == 'CNN':
-    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
-    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
-    utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
-    print("Validation: ", utils.evaluate(model, val_iter))
+# train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
+# train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
+# print("Vocab size ", vocab_size)
 
-    # Saving Model
+train_val_generator = get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+
+for fold, (train, val) in enumerate(train_val_generator):
+    train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+
+    if args.model == 'CNN':
+        model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+        if USE_CUDA:
+            print("USING CUDA")
+            model = model.cuda()
+        utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
+        print("Validation: ", utils.evaluate(model, val_iter))
+
+    elif args.model == "CNNFeatures":
+        model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
+        if USE_CUDA:
+            print("USING CUDA")
+            model = model.cuda()
+        utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
+        print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+
+    elif args.model == 'LSTM':
+        model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+        if USE_CUDA:
+            print("USING CUDA")
+            model = model.cuda()
+        utils.train(model, train_iter, val_iter, 30)
+        print("Validation: ", utils.evaluate(model, val_iter))
+
+    elif args.model == 'LSTMFeatures':
+        model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+        if USE_CUDA:
+            print("USING CUDA")
+            model = model.cuda()
+        utils.train(model, train_iter, val_iter, 30, has_features=True)
+        print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+
+# Saving Model
+if args.model == "CNN":
     filename = 'cnn_model.sav'
-    torch.save(model.state_dict(), filename)
-
 elif args.model == "CNNFeatures":
-    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
-    model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
-    utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
-    print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
-
-    # Saving Model
     filename = 'cnn_model_features.sav'
-    torch.save(model.state_dict(), filename)
-
-elif args.model == 'LSTM':
-    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
-    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
-    utils.train(model, train_iter, val_iter, 30)
-    print("Validation: ", utils.evaluate(model, val_iter))
-
-    # Saving Model
+elif args.model == "LSTM":
     filename = 'lstm_model.sav'
-    torch.save(model.state_dict(), filename)
-
-elif args.model == 'LSTMFeatures':
-    train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
-    model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
-    if USE_CUDA:
-        print("USING CUDA")
-        model = model.cuda()
-    utils.train(model, train_iter, val_iter, 30, has_features=True)
-    print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
-
-    # Saving Model
+elif args.model == "LSTMFeatures":
     filename = 'lstm_model_features.sav'
-    torch.save(model.state_dict(), filename)
+torch.save(model.state_dict(), filename)
 
 """
 GuidedBackProp Saliency Analysis
@@ -121,5 +118,4 @@ for text_i, label_i in zip(text, label):
 
     utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
     counter += 1
-    pdb.set_trace()
 

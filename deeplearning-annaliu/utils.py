@@ -86,10 +86,6 @@ def evaluate(model, data_iter, has_features=False):
 def forward_pass_on_convolutions(self, x):
     conv_output = None
 
-
-
-
-
 def saliency_map(model, inputs, label, features=None):
     # inputs = Variable(inputs.data, requires_grad=True)
 
