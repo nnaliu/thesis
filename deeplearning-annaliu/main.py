@@ -66,7 +66,7 @@ if args.use:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
-        p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
+        p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=False)
         p_avg += p
         r_avg += r
         f1_avg += f1
