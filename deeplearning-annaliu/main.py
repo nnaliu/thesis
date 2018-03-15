@@ -41,7 +41,7 @@ vectors = Vectors('wiki.simple.vec', url=url)
 # train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 # print("Vocab size ", vocab_size)
 
-train_val_generator = utils.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+train_val_generator = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 
 for fold, (train, val) in enumerate(train_val_generator):
     train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
