@@ -94,7 +94,7 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
     ]
 
     tweets_arr = np.array(tweets)
-    all_tweets = data.TabularDataset(tweets_arr, fields=fields)
+    all_tweets = data.Dataset(tweets_arr, fields=fields)
     tweet.build_vocab(all_tweets)
     label.build_vocab(all_tweets)
 
