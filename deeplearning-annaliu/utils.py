@@ -80,8 +80,8 @@ def evaluate(model, data_iter, has_features=False):
         _, argmax = probs.max(1)
         # label.sub_(1)
 
-        preds.append(argmax.data)
-        true.append(label.sub_(1).data)
+        preds.append(argmax.data[0])
+        true.append(label.sub_(1).data[0])
 
     pdb.set_trace()
     p, r, f1, s = precision_recall_fscore_support(true, preds, average='weighted')

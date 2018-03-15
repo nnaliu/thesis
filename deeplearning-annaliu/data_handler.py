@@ -101,7 +101,7 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
 
-    kf = KFold(n_splits=n_folds, random_state=seed)
+    kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_folds():
         for train_idx, val_idx in kf.split(tweet_exp):
             train = data.Dataset(list(tweet_exp[train_idx]), fields)
