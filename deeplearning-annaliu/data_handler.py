@@ -15,6 +15,7 @@ import torch.optim as optim
 import torchtext
 from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
+import numpy as np
 
 import pdb
 
