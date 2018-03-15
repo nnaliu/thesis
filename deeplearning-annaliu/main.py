@@ -66,7 +66,11 @@ if args.use:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
-        p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=False)
+
+        if args.model == 'CNN' or args.model == 'LSTM':
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+        elif args.model == 'CNNFeatures' or args.model == 'LSTMFeatures':
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
         p_avg += p
         r_avg += r
         f1_avg += f1

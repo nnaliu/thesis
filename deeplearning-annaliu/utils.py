@@ -80,6 +80,7 @@ def evaluate(model, data_iter, has_features=False):
         _, argmax = probs.max(1)
         # label.sub_(1)
 
+        pdb.set_trace()
         preds.append(argmax.data[0])
         true.append(label.sub_(1).data[0])
 
