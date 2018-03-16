@@ -132,31 +132,30 @@ print('average f1 is ' + str(f11_avg/N_FOLDS))
 GuidedBackProp Saliency Analysis
 """
 
-# filename = 'cnn_model.sav'
-# cnn = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+filename = 'cnn_model.sav'
+cnn = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 
 if USE_CUDA:
     print("converting to cuda")
     model = model.cuda()
 
-# model.load_state_dict(torch.load(filename))
+model.load_state_dict(torch.load(filename))
 
-# counter = 0
-# batch = next(iter(train_iter))
-# text, label = utils.process_batch(batch)
-# for text_i, label_i in zip(text, label):
-#     # utils.saliency_map(model, text_i, label_i)
-#     text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
-#     print("TEXT: ", text_words)
-#     print("LABEL: ", label_i)
-#     GBP = utils.GuidedBackprop(model, text_i, label_i-1)
-#     guided_grads = GBP.generate_gradients()
+counter = 0
+batch = next(iter(train_iter))
+text, label = utils.process_batch(batch)
+for text_i, label_i in zip(text, label):
+    # utils.saliency_map(model, text_i, label_i)
+    text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
+    print("TEXT: ", text_words)
+    print("LABEL: ", label_i)
+    GBP = utils.GuidedBackprop(model, text_i, label_i-1)
+    guided_grads = GBP.generate_gradients()
 
-#     metadata = open('./data/metadata' + str(counter) + '.txt', 'w')
-#     metadata.write(text_words)
-#     metadata.write(str(label_i.data))
-#     metadata.close()
+    metadata = open('./data/metadata' + str(counter) + '.txt', 'w')
+    metadata.write(text_words)
+    metadata.write(str(label_i.data))
+    metadata.close()
 
-#     utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
-#     counter += 1
-
+    utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
+    counter += 1

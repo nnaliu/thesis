@@ -84,7 +84,6 @@ def evaluate(model, data_iter, has_features=False):
         _, argmax = probs.max(1)
         # label.sub_(1)
 
-        pdb.set_trace()
         preds = torch.cat((preds, argmax.data))
         true = torch.cat((true, label.sub_(1).data))
 
@@ -206,6 +205,7 @@ class GuidedBackprop():
         # Convert Pytorch variable to numpy array
         # [0] to get rid of the first channel (1,3,224,224)
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
+        pdb.set_trace()
         return gradients_as_arr
 
 def save_saliency_map(counter, gradient, vocab, text, label):
@@ -226,9 +226,15 @@ def save_saliency_map(counter, gradient, vocab, text, label):
     # plot_saliency_map(filename)
 
 def plot_saliency_map(filename, metadata):
-    gradients = np.loadtxt(filename + '.csv')
+    gradients = np.genfromtxt(filename + '.csv', delimiter=',')
+    gradient_magnify = np.zeros((gradients.shape[0]*10, gradients.shape[1]))
+    for i in range(gradients.shape[0]):
+        for j in range(10):
+            gradient_magnify[i*10+j:] = gradients[i,:]
     fig = plt.figure()
-    plt.imshow(gradients)
+    ax = fig.add_subplot(1,1,1)
+    plt.imshow(gradient_magnify, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.colorbar()
     plt.show()
 
 def get_positive_negative_saliency(gradient):
@@ -236,4 +242,7 @@ def get_positive_negative_saliency(gradient):
     neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
     return pos_saliency, neg_saliency
 
-
+counter = 0
+filename = 'data/gradient' + str(counter)
+metadata = 'data/metadata' + str(counter)
+plot_saliency_map(filename, metadata)
