@@ -242,7 +242,7 @@ def get_positive_negative_saliency(gradient):
     neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
     return pos_saliency, neg_saliency
 
-counter = 0
-filename = 'data/gradient' + str(counter)
-metadata = 'data/metadata' + str(counter)
-plot_saliency_map(filename, metadata)
+# counter = 0
+# filename = 'data/gradient' + str(counter)
+# metadata = 'data/metadata' + str(counter)
+# plot_saliency_map(filename, metadata)
