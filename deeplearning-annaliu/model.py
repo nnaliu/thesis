@@ -17,7 +17,7 @@ USE_CUDA = True if torch.cuda.is_available() else False
 
 class CNNClassifier(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
-                feature_maps=100, filter_windows=[3,4,5], dropout=0.5):
+                featurdfe_maps=100, filter_windows=[3,4,5], dropout=0.5):
         super(CNNClassifier, self).__init__()
 
         self.vocab_size = vocab_size

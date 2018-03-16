@@ -72,7 +72,6 @@ def evaluate(model, data_iter, has_features=False):
     if USE_CUDA:
         preds = preds.cuda()
         true = true.cuda()
-
     for batch in data_iter:
         if has_features:
             text, label, features = process_batch2(batch)
@@ -94,7 +93,6 @@ def evaluate(model, data_iter, has_features=False):
     print('precision is ' + str(p))
     print('recall is ' + str(r))
     print('f1 is ' + str(f1))
-
     print('CURR - MICRO RESULTS')
     print('precision is ' + str(p1))
     print('recall is ' + str(r1))

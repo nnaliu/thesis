@@ -20,7 +20,6 @@ torch.manual_seed(1)
 USE_CUDA = True if torch.cuda.is_available() else False
 N_FOLDS = 10
 
-
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, help='type of model')
 parser.add_argument('--batch_size', type=int, default=128)
