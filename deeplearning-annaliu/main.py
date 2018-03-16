@@ -77,7 +77,7 @@ if args.use:
         p1_avg += p1
         r1_avg += r1
         f11_avg += f11
-else:
+elif args.model:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
