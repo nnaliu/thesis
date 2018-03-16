@@ -226,14 +226,20 @@ def save_saliency_map(counter, gradient, vocab, text, label):
     # plot_saliency_map(filename)
 
 def plot_saliency_map(filename, metadata):
-    gradients = np.genfromtxt(filename + '.csv', delimiter=',')
+    with open(metadata) as f:
+        text = list(w.strip("'[]\n\' '") for w in f.readline().split(','))
+
+    gradients = np.genfromtxt(filename, delimiter=',')
     gradient_magnify = np.zeros((gradients.shape[0]*10, gradients.shape[1]))
     for i in range(gradients.shape[0]):
         for j in range(10):
             gradient_magnify[i*10+j:] = gradients[i,:]
+    
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     plt.imshow(gradient_magnify, interpolation='nearest', cmap=plt.cm.Blues)
+    y = [i*10+5 for i in range(len(text))]
+    plt.yticks(y, text)
     plt.colorbar()
     plt.show()
 
@@ -243,6 +249,7 @@ def get_positive_negative_saliency(gradient):
     return pos_saliency, neg_saliency
 
 # counter = 0
-# filename = 'data/gradient' + str(counter)
-# metadata = 'data/metadata' + str(counter)
-# plot_saliency_map(filename, metadata)
+for counter in range(15):
+    filename = 'data/gradient' + str(counter) + '.csv'
+    metadata = 'data/metadata' + str(counter) + '.txt'
+    plot_saliency_map(filename, metadata)
