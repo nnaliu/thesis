@@ -133,7 +133,7 @@ GuidedBackProp Saliency Analysis
 """
 
 filename = 'cnn_model.sav'
-cnn = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 
 if USE_CUDA:
     print("converting to cuda")
