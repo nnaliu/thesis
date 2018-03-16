@@ -136,9 +136,9 @@ filename = 'cnn_model.sav'
 model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 model.load_state_dict(torch.load(filename))
 
-if USE_CUDA:
-    print("converting to cuda")
-    model = model.cuda()
+# if USE_CUDA:
+#     print("converting to cuda")
+#     model = model.cuda()
 
 counter = 0
 batch = next(iter(train_iter))
