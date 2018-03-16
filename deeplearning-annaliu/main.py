@@ -57,7 +57,7 @@ elif args.model == 'LSTM':
 elif args.model == 'LSTMFeatures':
     model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
 
-if USE_CUDA:
+if USE_CUDA and args.model:
     print("USING CUDA")
     model = model.cuda()
 
@@ -136,9 +136,9 @@ filename = 'cnn_model.sav'
 model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 model.load_state_dict(torch.load(filename))
 
-# if USE_CUDA:
-#     print("converting to cuda")
-#     model = model.cuda()
+if USE_CUDA:
+    print("converting to cuda")
+    model = model.cuda()
 
 counter = 0
 batch = next(iter(train_iter))
