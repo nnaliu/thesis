@@ -131,34 +131,34 @@ print('average f1 is ' + str(f11_avg/N_FOLDS))
 GuidedBackProp Saliency Analysis
 """
 
-filename = 'cnn_model.sav'
-model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-model.load_state_dict(torch.load(filename))
+# filename = 'cnn_model.sav'
+# model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+# model.load_state_dict(torch.load(filename))
 
-if USE_CUDA:
-    print("converting to cuda")
-    model = model.cuda()
+# if USE_CUDA:
+#     print("converting to cuda")
+#     model = model.cuda()
 
-counter = 0
-for fold, (train, val) in enumerate(train_val_generator):
-    train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
-    batch = next(iter(train_iter))
-    text, label = utils.process_batch(batch)
-    for text_i, label_i in zip(text, label):
-        # utils.saliency_map(model, text_i, label_i)
-        text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
-        print("TEXT: ", text_words)
-        print("LABEL: ", label_i)
-        GBP = utils.GuidedBackprop(model, text_i, label_i-1)
-        guided_grads = GBP.generate_gradients()
+# counter = 0
+# for fold, (train, val) in enumerate(train_val_generator):
+#     train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+#     batch = next(iter(train_iter))
+#     text, label = utils.process_batch(batch)
+#     for text_i, label_i in zip(text, label):
+#         # utils.saliency_map(model, text_i, label_i)
+#         text_words = " ".join([tweet_vocab.vocab.itos[i.data[0]] for i in text_i])
+#         print("TEXT: ", text_words)
+#         print("LABEL: ", label_i)
+#         GBP = utils.GuidedBackprop(model, text_i, label_i-1)
+#         guided_grads = GBP.generate_gradients()
 
-        metadata = open('./data/metadata' + str(counter) + '.txt', 'w')
-        metadata.write(text_words)
-        metadata.write(str(label_i.data))
-        metadata.close()
+#         metadata = open('./data/metadata' + str(counter) + '.txt', 'w')
+#         metadata.write(text_words)
+#         metadata.write(str(label_i.data))
+#         metadata.close()
 
-        utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
-        counter += 1
+#         utils.save_saliency_map(counter, guided_grads, tweet_vocab, text_i, label_i)
+#         counter += 1
 
-        if counter > 100:
-            break
+#         if counter > 100:
+#             break
