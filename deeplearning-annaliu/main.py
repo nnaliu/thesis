@@ -28,7 +28,11 @@ parser.add_argument('--use', type=str, default=None, help='use a pretrained mode
 args = parser.parse_args()
 
 # Need to figure out how to not have headers writing to file in middle (Ctrl+F 'retweet_count')
-tweet_data = data_handler.prepare_csv()
+data_file = "cache/tweets_data.csv"
+if os.path.isfile(data_file):
+    tweet_data = pd.read_csv(data_file, encoding='utf-8')
+else:
+    tweet_data = data_handler.prepare_csv()
 print("Finished preparing CSV")
 
 # Word embeddings
@@ -48,8 +52,12 @@ p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
 if args.model == 'CNN':
-    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+    model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
 elif args.model == 'CNNFeatures':
+    model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
+elif args.model == 'CNNMulti':
+    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+elif args.model == 'CNNMultiFeatures':
     model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
 elif args.model == 'LSTM':
     model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
@@ -66,9 +74,9 @@ if args.use:
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
 
-        if args.model == 'CNN' or args.model == 'LSTM':
+        if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
-        elif args.model == 'CNNFeatures' or args.model == 'LSTMFeatures':
+        elif args.model == 'CNNFeatures' or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
         p_avg += p
         r_avg += r
@@ -81,11 +89,11 @@ elif args.model:
         print("FOLD " + str(fold))
         train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
 
-        if args.model == 'CNN':
+        if args.model == 'CNN' or args.model == 'CNNMulti':
             utils.train(model, train_iter, val_iter, 10) # Change number of epochs later
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
             # print("Validation: ", utils.evaluate(model, val_iter))
-        elif args.model == "CNNFeatures":
+        elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures':
             utils.train(model, train_iter, val_iter, 10, has_features=True) # Change number of epochs later
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
 
@@ -111,6 +119,10 @@ elif args.model:
         filename = 'cnn_model.sav'
     elif args.model == "CNNFeatures":
         filename = 'cnn_model_features.sav'
+    elif args.model == "CNNMulti":
+        filename = 'cnn_multi_model.sav'
+    elif args.model == "CNNMultiFeatures":
+        filename = 'cnn_multi_model_features.sav'
     elif args.model == "LSTM":
         filename = 'lstm_model.sav'
     elif args.model == "LSTMFeatures":
