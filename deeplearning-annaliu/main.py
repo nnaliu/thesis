@@ -50,11 +50,11 @@ p1_avg, r1_avg, f11_avg = 0., 0., 0.
 if args.model == 'CNN':
     model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 elif args.model == 'CNNFeatures':
-    model = model.CNNClassifierFeatures(model='multichannel', vocab_size=vocab_size, class_number=2)
+    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
 elif args.model == 'LSTM':
     model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
 elif args.model == 'LSTMFeatures':
-    model = model.LSTMClassifierFeatures(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
 
 if USE_CUDA and args.model:
     print("USING CUDA")
