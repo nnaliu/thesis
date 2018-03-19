@@ -67,7 +67,7 @@ gmodel = KeyedVectors.load_word2vec_format(google_filename, binary=True)
 
 print("Reading own model")
 my_model_aligned_filename = 'my_model_aligned.bin'
-aligned_model = Word2Vec.load(my_model_aligned_filename)
+aligned_model = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
 
 for word in common_english_words:
     similarity = compare_word(word, gmodel, aligned_model)
