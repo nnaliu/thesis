@@ -27,6 +27,7 @@ class CNNClassifier(nn.Module):
         self.in_channel = 1
         self.out_channel = feature_maps
         self.model = model
+        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
 
         if model == "static":
             self.embedding.weight.requires_grad = False
@@ -35,7 +36,6 @@ class CNNClassifier(nn.Module):
             self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
-        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
         self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
         self.dropout = nn.Dropout(dropout)
 
@@ -132,7 +132,7 @@ class LSTMClassifier(nn.Module):
         embeddings1 = embeddings.transpose(0, 1)
         output, hidden = self.lstm(embeddings1, hidden)
         # output: [seq_len x batch x hidden]
-        
+
         if features:
             output = output[-1].type(torch.FloatTensor).cuda() if USE_CUDA else output[-1].type(torch.FloatTensor)
             result = torch.cat((output, rt, fav, usr_followers, usr_following), 1)
