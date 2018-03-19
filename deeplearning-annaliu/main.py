@@ -47,8 +47,8 @@ vectors = Vectors('wiki.simple.vec', url=url)
 # train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 # FIX VOCAB SIZE
 
-# train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
-# print("Vocab size ", vocab_size)
+train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+print("Vocab size ", vocab_size)
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
@@ -90,7 +90,6 @@ elif args.model:
 
     for epoch in range(EPOCHS):
         print("EPOCH " + str(epoch))
-        train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 
         for fold, (train, val) in enumerate(train_val_generator):
             print("FOLD " + str(fold))
@@ -120,6 +119,8 @@ elif args.model:
             p1_avg += p1
             r1_avg += r1
             f11_avg += f11
+
+        train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 
     # Saving Model
     # if not args.use:
