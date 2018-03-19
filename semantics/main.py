@@ -46,6 +46,9 @@ def compare_word(word, gmodel, aligned_model):
     output = np.dot(matutils.unitvec(g_word), matutils.unitvec(a_word))
     return output
 
+my_model = import_model()
+my_model_aligned = align_model(my_model)
+
 # google: 0.33103912924302953
 # the: 0.5419154203028927
 # is: 0.530239081501294
@@ -59,16 +62,16 @@ def compare_word(word, gmodel, aligned_model):
 # african: 0.29049011280501214
 # guinea: 0.2655043914639797
 
-common_english_words = ['the','of','and','a','to','in','is','you','that','it','he','was','for','on','are','as','with','his','they','I']
+# common_english_words = ['the','of','and','a','to','in','is','you','that','it','he','was','for','on','are','as','with','his','they','I']
 
-print("Reading Google")
-google_filename = 'GoogleNews-vectors-negative300.bin'
-gmodel = KeyedVectors.load_word2vec_format(google_filename, binary=True)
+# print("Reading Google")
+# google_filename = 'GoogleNews-vectors-negative300.bin'
+# gmodel = KeyedVectors.load_word2vec_format(google_filename, binary=True)
 
-print("Reading own model")
-my_model_aligned_filename = 'my_model_aligned.bin'
-aligned_model = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
+# print("Reading own model")
+# my_model_aligned_filename = 'my_model_aligned.bin'
+# aligned_model = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
 
-for word in common_english_words:
-    similarity = compare_word(word, gmodel, aligned_model)
-    print(word + "     Similarity: " + str(similarity))
+# for word in common_english_words:
+#     similarity = compare_word(word, gmodel, aligned_model)
+#     print(word + "     Similarity: " + str(similarity))
