@@ -95,11 +95,6 @@ class LSTMClassifier(nn.Module):
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.num_directions = 2 if bidirectional else 1
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
-
-        # NEW CODE
-        self.lstm2 = nn.LSTM(hidden_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
-        # END NEW CODE
-
         self.dropout = nn.Dropout(dropout_p)
         self.dropout1 = nn.Dropout(0.5)
 
@@ -137,12 +132,7 @@ class LSTMClassifier(nn.Module):
         embeddings1 = embeddings.transpose(0, 1)
         output, hidden = self.lstm(embeddings1, hidden)
         # output: [seq_len x batch x hidden]
-
-        #NEW CODE
-        hidden2 = self.init_hidden(batch_size)
-        output, hidden = self.lstm2(output, hidden2)
-        #END NEW CODE
-
+        
         if features:
             output = output[-1].type(torch.FloatTensor).cuda() if USE_CUDA else output[-1].type(torch.FloatTensor)
             result = torch.cat((output, rt, fav, usr_followers, usr_following), 1)
