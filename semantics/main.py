@@ -31,7 +31,7 @@ def import_model(input_file='cache/all_tweets.csv', my_model_filename='my_model.
 
 def align_model(my_model, my_model_aligned_filename='my_model_aligned.bin'):
     if os.path.exists(my_model_aligned_filename):
-        my_model_aligned = Word2Vec.load(my_model_aligned_filename)
+        my_model_aligned = KeyedVectors.load_word2vec_format(my_model_aligned_filename)
     else:
         google_filename = 'GoogleNews-vectors-negative300.bin'
         print("Reading Google")
@@ -50,7 +50,7 @@ def compare_word(word, gmodel, aligned_model):
 # my_model_aligned = align_model(my_model)
 
 my_model_aligned_filename='my_model_aligned.bin'
-my_model_aligned = Word2Vec.load(my_model_aligned_filename)
+my_model_aligned = KeyedVectors.load_word2vec_format(my_model_aligned_filename)
 my_model_aligned_txt = my_model_aligned.wv.save_word2vec_format('my_model_aligned.txt', binary=False)
 
 # google: 0.33103912924302953
