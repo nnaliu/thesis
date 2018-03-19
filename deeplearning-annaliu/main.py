@@ -53,7 +53,7 @@ p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
 if args.model == 'CNN':
-    model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
+    model = model.CNNClassifier(model='static', vocab_size=vocab_size, class_number=2)
 elif args.model == 'CNNFeatures':
     model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
 elif args.model == 'CNNMulti':
