@@ -12,7 +12,7 @@ import preprocessor as p
 import align
 import pdb
 
-def import_model(input_file='cache/all_tweets.csv', my_model_filename='my_model.bin'):
+def import_model(input_file='cache/all_tweets.csv', my_model_filename='my_model.txt'):
     if os.path.exists(my_model_filename):
         my_model = KeyedVectors.load_word2vec_format(my_model_filename, binary=True)
         my_model.init_sims()
@@ -26,10 +26,10 @@ def import_model(input_file='cache/all_tweets.csv', my_model_filename='my_model.
         print(my_model)
         words = list(my_model.wv.vocab)
         print("Num words:", len(words))
-        my_model.wv.save_word2vec_format(my_model_filename, binary=True)
+        my_model.wv.save_word2vec_format(my_model_filename, binary=False)
     return my_model
 
-def align_model(my_model, my_model_aligned_filename='my_model_aligned.bin'):
+def align_model(my_model, my_model_aligned_filename='my_model_aligned.txt'):
     if os.path.exists(my_model_aligned_filename):
         my_model_aligned = Word2Vec.load(my_model_aligned_filename)
     else:
@@ -37,7 +37,7 @@ def align_model(my_model, my_model_aligned_filename='my_model_aligned.bin'):
         print("Reading Google")
         gmodel = KeyedVectors.load_word2vec_format(google_filename, binary=True)
         my_model_aligned = align.smart_procrustes_align_gensim(gmodel, my_model)
-        my_model_aligned.wv.save_word2vec_format(my_model_aligned_filename, binary=True)
+        my_model_aligned.wv.save_word2vec_format(my_model_aligned_filename, binary=False)
     return my_model_aligned
 
 def compare_word(word, gmodel, aligned_model):
