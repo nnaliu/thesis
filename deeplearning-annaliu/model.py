@@ -97,7 +97,7 @@ class LSTMClassifier(nn.Module):
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
 
         # NEW CODE
-        self.lstm2 = nn.LSTM(hidden_dim // self.num_directions, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
+        self.lstm2 = nn.LSTM(hidden_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
         # END NEW CODE
 
         self.dropout = nn.Dropout(dropout_p)
