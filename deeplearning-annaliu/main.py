@@ -118,7 +118,7 @@ elif args.model:
     # Saving Model
     if not args.use:
         if args.model == "CNN":
-            filename = 'cnn_model.sav'
+            filename = 'cnn_model_static.sav'
         elif args.model == "CNNFeatures":
             filename = 'cnn_model_features.sav'
         elif args.model == "CNNMulti":
