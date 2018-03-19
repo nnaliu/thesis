@@ -1,5 +1,5 @@
 import sys, os
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, KeyedVectors
 import tensorflow as tf
 import numpy as np
 from tensorflow.contrib.tensorboard.plugins import projector
