@@ -140,7 +140,7 @@ class LSTMClassifier(nn.Module):
 
         #NEW CODE
         hidden2 = self.init_hidden(batch_size)
-        output, hidden = self.lstm(hidden, hidden2)
+        output, hidden = self.lstm2(hidden, hidden2)
         #END NEW CODE
 
         if features:
