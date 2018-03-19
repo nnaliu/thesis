@@ -20,7 +20,6 @@ torch.manual_seed(1)
 
 USE_CUDA = True if torch.cuda.is_available() else False
 N_FOLDS = 10
-EPOCHS = 10
 
 parser = argparse.ArgumentParser(description='Hate Speech Classification')
 parser.add_argument('--model', type=str, help='type of model')
@@ -87,56 +86,50 @@ if args.use:
         r1_avg += r1
         f11_avg += f11
 elif args.model:
+    for fold, (train, val) in enumerate(train_val_generator):
+        print("FOLD " + str(fold))
+        train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
 
-    for epoch in range(EPOCHS):
-        print("EPOCH " + str(epoch))
+        if args.model == 'CNN' or args.model == 'CNNMulti':
+            utils.train(model, train_iter, val_iter, 5) # Change number of epochs later
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+            # print("Validation: ", utils.evaluate(model, val_iter))
+        elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures':
+            utils.train(model, train_iter, val_iter, 5, has_features=True) # Change number of epochs later
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
 
-        for fold, (train, val) in enumerate(train_val_generator):
-            print("FOLD " + str(fold))
-            train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+        elif args.model == 'LSTM':
+            utils.train(model, train_iter, val_iter, 30)
+            # print("Validation: ", utils.evaluate(model, val_iter))
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
 
-            if args.model == 'CNN' or args.model == 'CNNMulti':
-                utils.train(model, train_iter, val_iter, 1) # Change number of epochs later
-                p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
-                # print("Validation: ", utils.evaluate(model, val_iter))
-            elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures':
-                utils.train(model, train_iter, val_iter, 1, has_features=True) # Change number of epochs later
-                p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
+        elif args.model == 'LSTMFeatures':
+            utils.train(model, train_iter, val_iter, 30, has_features=True)
+            # print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
 
-            elif args.model == 'LSTM':
-                utils.train(model, train_iter, val_iter, 1)
-                # print("Validation: ", utils.evaluate(model, val_iter))
-                p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
-
-            elif args.model == 'LSTMFeatures':
-                utils.train(model, train_iter, val_iter, 1, has_features=True)
-                # print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
-                p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
-
-            p_avg += p
-            r_avg += r
-            f1_avg += f1
-            p1_avg += p1
-            r1_avg += r1
-            f11_avg += f11
-
-        train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+        p_avg += p
+        r_avg += r
+        f1_avg += f1
+        p1_avg += p1
+        r1_avg += r1
+        f11_avg += f11
 
     # Saving Model
-    # if not args.use:
-    #     if args.model == "CNN":
-    #         filename = 'cnn_model_static.sav'
-    #     elif args.model == "CNNFeatures":
-    #         filename = 'cnn_model_features.sav'
-    #     elif args.model == "CNNMulti":
-    #         filename = 'cnn_multi_model.sav'
-    #     elif args.model == "CNNMultiFeatures":
-    #         filename = 'cnn_multi_model_features.sav'
-    #     elif args.model == "LSTM":
-    #         filename = 'lstm_model.sav'
-    #     elif args.model == "LSTMFeatures":
-    #         filename = 'lstm_model_features.sav'
-    #     torch.save(model.state_dict(), filename)
+    if not args.use:
+        if args.model == "CNN":
+            filename = 'cnn_model.sav'
+        elif args.model == "CNNFeatures":
+            filename = 'cnn_model_features.sav'
+        elif args.model == "CNNMulti":
+            filename = 'cnn_multi_model.sav'
+        elif args.model == "CNNMultiFeatures":
+            filename = 'cnn_multi_model_features.sav'
+        elif args.model == "LSTM":
+            filename = 'lstm_model.sav'
+        elif args.model == "LSTMFeatures":
+            filename = 'lstm_model_features.sav'
+        torch.save(model.state_dict(), filename)
 
 print('WEIGHTED RESULTS')
 print('average precision is ' + str(p_avg/N_FOLDS))
