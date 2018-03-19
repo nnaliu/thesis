@@ -26,10 +26,10 @@ def import_model(input_file='cache/all_tweets.csv', my_model_filename='my_model.
         print(my_model)
         words = list(my_model.wv.vocab)
         print("Num words:", len(words))
-        my_model.wv.save_word2vec_format(my_model_filename, binary=False)
+        # my_model.wv.save_word2vec_format(my_model_filename, binary=False)
     return my_model
 
-def align_model(my_model, my_model_aligned_filename='my_model_aligned.txt'):
+def align_model(my_model, my_model_aligned_filename='my_model_aligned.bin'):
     if os.path.exists(my_model_aligned_filename):
         my_model_aligned = Word2Vec.load(my_model_aligned_filename)
     else:
@@ -46,8 +46,12 @@ def compare_word(word, gmodel, aligned_model):
     output = np.dot(matutils.unitvec(g_word), matutils.unitvec(a_word))
     return output
 
-my_model = import_model()
-my_model_aligned = align_model(my_model)
+# my_model = import_model()
+# my_model_aligned = align_model(my_model)
+
+my_model_aligned_filename='my_model_aligned.bin'
+my_model_aligned = Word2Vec.load(my_model_aligned_filename)
+my_model_aligned_txt = my_model_aligned.wv.save_word2vec_format('my_model_aligned.txt', binary=False)
 
 # google: 0.33103912924302953
 # the: 0.5419154203028927
