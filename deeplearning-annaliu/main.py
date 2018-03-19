@@ -89,7 +89,7 @@ if args.use:
 elif args.model:
 
     for epoch in range(EPOCHS):
-
+        print("EPOCH " + str(epoch))
         train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 
         for fold, (train, val) in enumerate(train_val_generator):
@@ -120,8 +120,6 @@ elif args.model:
             p1_avg += p1
             r1_avg += r1
             f11_avg += f11
-
-        print("EPOCH " + str(epoch))
 
     # Saving Model
     # if not args.use:
