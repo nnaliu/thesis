@@ -98,25 +98,25 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
         fields=fields
     )
 
-    pdb.set_trace()
-    train, test = train_test_split(all_tweets, test_size=0.2)
-    pdb.set_trace()
-
-    tweet.build_vocab(train, vectors=vectors)
-    label.build_vocab(train)
-    tweet_exp = np.array(train.examples)
+    tweet.build_vocab(all_tweets, vectors=vectors)
+    label.build_vocab(all_tweets)
+    tweet_exp = np.array(all_tweets.examples)
+    split = int(9. / 10 *len(tweet_exp))
+    train_val = tweet_exp[:split]
+    test = tweet_exp[split:]
+    test_data = data.Dataset(test, fields)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_folds():
         train_val = []
-        for train_idx, val_idx in kf.split(tweet_exp):
-            train = data.Dataset(list(tweet_exp[train_idx]), fields)
-            val = data.Dataset(list(tweet_exp[val_idx]), fields)
+        for train_idx, val_idx in kf.split(train_val):
+            train = data.Dataset(list(train_val[train_idx]), fields)
+            val = data.Dataset(list(train_val[val_idx]), fields)
             train_val.append((train, val))
             # yield (train, val,)
         return train_val
 
-    return iter_folds(), test_tweets, len(tweet.vocab), tweet
+    return iter_folds(), test_data, len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):
