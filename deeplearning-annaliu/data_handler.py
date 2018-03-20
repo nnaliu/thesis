@@ -109,13 +109,13 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_fold(train_val):
-        train_val = []
+        train_val_arr = []
         for train_idx, val_idx in kf.split(train_val):
             train = data.Dataset(list(train_val[train_idx]), fields)
             val = data.Dataset(list(train_val[val_idx]), fields)
-            train_val.append((train, val))
+            train_val_arr.append((train, val))
             # yield (train, val,)
-        return train_val
+        return train_val_arr
 
     return iter_fold(train_val), test_data, len(tweet.vocab), tweet
 
