@@ -70,8 +70,8 @@ def prepare_csv():
     return tweet_data
 
 
-def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
-    lower = True if vectors is not None else False
+def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
+        lower = True if vectors is not None else False
     # tweet = data.Field(sequential=False, tensor_type=torch.LongTensor, lower=lower)
     tweet = data.Field(sequential=True)
     label = data.Field(sequential=False)
@@ -93,21 +93,30 @@ def get_dataset(tweets, lower=False, vectors=None, n_folds=10, seed=42):
         ('hate_label', label),
     ]
 
-    all_tweets = data.TabularDataset(
-        path='cache/tweets_data.csv', format='csv', skip_header=True,
+    train_tweets = data.TabularDataset(
+        path='cache/tweets_train.csv', format='csv', skip_header=True,
         fields=fields
     )
-    tweet.build_vocab(all_tweets, vectors=vectors)
-    label.build_vocab(all_tweets)
-    tweet_exp = np.array(all_tweets.examples)
+    test_tweets = data.TabularDataset(
+        path='cache/tweets_test.csv', format='csv', skip_header=True,
+        fields=fields
+    )
+
+    tweet.build_vocab(train_tweets, vectors=vectors)
+    label.build_vocab(train_tweets)
+    tweet_exp = np.array(train_tweets.examples)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_folds():
+        train_val = []
         for train_idx, val_idx in kf.split(tweet_exp):
             train = data.Dataset(list(tweet_exp[train_idx]), fields)
             val = data.Dataset(list(tweet_exp[val_idx]), fields)
-            yield (train, val,)
-    return iter_folds(), len(tweet.vocab), tweet
+            train_val.append((train, val))
+            # yield (train, val,)
+        return train_val
+
+    return iter_folds(), test_tweets, len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):

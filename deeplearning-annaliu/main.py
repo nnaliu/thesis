@@ -29,24 +29,26 @@ parser.add_argument('--use', type=str, default=None, help='use a pretrained mode
 args = parser.parse_args()
 
 # Need to figure out how to not have headers writing to file in middle (Ctrl+F 'retweet_count')
-data_file = "cache/tweets_data.csv"
-if os.path.isfile(data_file):
-    tweet_data = pd.read_csv(data_file, encoding='utf-8')
-else:
-    tweet_data = data_handler.prepare_csv()
-print("Finished preparing CSV")
+
+# vv GOOD LIFE RIGHT HERE
+# data_file = "cache/tweets_data.csv"
+# if os.path.isfile(data_file):
+#     tweet_data = pd.read_csv(data_file, encoding='utf-8')
+# else:
+#     tweet_data = data_handler.prepare_csv()
+# print("Finished preparing CSV")
 
 # Word embeddings
 # vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
-url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
-vectors = Vectors('wiki.simple.vec', url=url)
+# url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
+# vectors = Vectors('wiki.simple.vec', url=url)
 # vectors=None
 
 # train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
 # train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 # FIX VOCAB SIZE
 
-train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(tweet_data, lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+train_val_generator, test, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 print("Vocab size ", vocab_size)
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
@@ -73,7 +75,7 @@ if args.use:
     model.load_state_dict(torch.load(args.use))
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
-        train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+        train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
@@ -88,25 +90,29 @@ if args.use:
 elif args.model:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
-        train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
+        train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 
         if args.model == 'CNN' or args.model == 'CNNMulti':
             utils.train(model, train_iter, val_iter, 5) # Change number of epochs later
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+            utils.evaluate(model, val_iter)
             # print("Validation: ", utils.evaluate(model, val_iter))
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures':
             utils.train(model, train_iter, val_iter, 5, has_features=True) # Change number of epochs later
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
-
+            utils.evaluate(model, val_iter, has_features=True)
         elif args.model == 'LSTM':
             utils.train(model, train_iter, val_iter, 30)
             # print("Validation: ", utils.evaluate(model, val_iter))
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
+            utils.evaluate(model, val_iter)
 
         elif args.model == 'LSTMFeatures':
             utils.train(model, train_iter, val_iter, 30, has_features=True)
             # print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
+            utils.evaluate(model, val_iter, has_features=True)
+
+        if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter)
+        elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter, has_features=True)
 
         p_avg += p
         r_avg += r
