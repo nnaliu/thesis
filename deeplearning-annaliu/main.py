@@ -121,7 +121,7 @@ elif args.model:
         r1_avg += r1
         f11_avg += f11
 
-    Saving Model
+    # Saving Model
     if not args.use:
         if args.model == "CNN":
             filename = 'cnn_model.sav'
