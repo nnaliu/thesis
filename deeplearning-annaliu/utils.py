@@ -33,6 +33,7 @@ def process_batch2(batch):
     if USE_CUDA:
         text = text.cuda()
         hate_label = hate_label.cuda()
+    pdb.set_trace()
     return text, hate_label, (rt, fav, usr_followers, usr_following)
 
 def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_features=False):
@@ -50,6 +51,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             model.zero_grad()
             if has_features:
                 text, label, features = process_batch2(batch)
+                pdb.set_trace()
                 logit = model(text, features)
             else:
                 text, label = process_batch(batch)
