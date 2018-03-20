@@ -16,7 +16,7 @@ torch.manual_seed(1)
 USE_CUDA = True if torch.cuda.is_available() else False
 
 class CNN_Mult_Embed(nn.Module):
-    def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, class_number=None,
+    def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, embeds=None, class_number=None,
                 feature_maps=100, filter_windows=[3,4,5], dropout=0.25, features=False):
         super(CNNClassifier, self).__init__()
 
@@ -29,10 +29,14 @@ class CNN_Mult_Embed(nn.Module):
         self.model = model
         self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
 
+        # Pretrained Embedding
+        self.embedding.weight.data.copy_(torch.from_numpy(embeds))
+
         if model == "static":
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
             self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
+            self.embedding2.weight.data.copy_(torch.from_numpy(embeds))
             self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
