@@ -93,18 +93,18 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
         ('hate_label', label),
     ]
 
-    train_tweets = data.TabularDataset(
-        path='cache/tweets_train.csv', format='csv', skip_header=True,
-        fields=fields
-    )
-    test_tweets = data.TabularDataset(
-        path='cache/tweets_test.csv', format='csv', skip_header=True,
+    all_tweets = data.TabularDataset(
+        path='cache/tweets_data.csv', format='csv', skip_header=True,
         fields=fields
     )
 
-    tweet.build_vocab(train_tweets, vectors=vectors)
-    label.build_vocab(train_tweets)
-    tweet_exp = np.array(train_tweets.examples)
+    pdb.set_trace()
+    train, test = train_test_split(all_tweets, test_size=0.2)
+    pdb.set_trace()
+
+    tweet.build_vocab(train, vectors=vectors)
+    label.build_vocab(train)
+    tweet_exp = np.array(train.examples)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_folds():
