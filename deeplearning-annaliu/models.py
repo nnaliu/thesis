@@ -18,7 +18,7 @@ USE_CUDA = True if torch.cuda.is_available() else False
 class CNN_Mult_Embed(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, embeds=None, class_number=None,
                 feature_maps=100, filter_windows=[3,4,5], dropout=0.25, features=False):
-        super(CNNClassifier, self).__init__()
+        super(CNN_Mult_Embed, self).__init__()
 
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
