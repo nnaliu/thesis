@@ -40,8 +40,8 @@ args = parser.parse_args()
 
 # Word embeddings
 # vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
-# url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
-# vectors = Vectors('wiki.simple.vec', url=url)
+url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
+vectors = Vectors('wiki.simple.vec', url=url)
 # vectors=None
 
 # train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
