@@ -33,7 +33,6 @@ def process_batch2(batch):
     if USE_CUDA:
         text = text.cuda()
         hate_label = hate_label.cuda()
-    pdb.set_trace()
     return text, hate_label, (rt, fav, usr_followers, usr_following)
 
 def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_features=False):
@@ -51,8 +50,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
             model.zero_grad()
             if has_features:
                 text, label, features = process_batch2(batch)
-                pdb.set_trace()
-                logit = model(text, features)
+                logit = model(text, features=features)
             else:
                 text, label = process_batch(batch)
                 logit = model(text)
@@ -205,7 +203,6 @@ class GuidedBackprop():
         # Convert Pytorch variable to numpy array
         # [0] to get rid of the first channel (1,3,224,224)
         gradients_as_arr = self.gradients.data.squeeze(0).cpu().numpy()[0]
-        pdb.set_trace()
         return gradients_as_arr
 
 def save_saliency_map(counter, gradient, vocab, text, label):

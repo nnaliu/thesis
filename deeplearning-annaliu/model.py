@@ -49,8 +49,7 @@ class CNNClassifier(nn.Module):
         result = F.max_pool1d(result_convolution, result_convolution.size(2)).squeeze(2) # (batch_size, out_channel)
         return result
 
-    def forward(self, inputs, test=False, features=None):
-        pdb.set_trace()
+    def forward(self, inputs, features=None, test=False):
         if features:
             rt, fav, usr_followers, usr_following = features
             rt = rt.type(torch.FloatTensor).sqrt()
