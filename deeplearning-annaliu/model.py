@@ -50,6 +50,7 @@ class CNNClassifier(nn.Module):
         return result
 
     def forward(self, inputs, test=False, features=None):
+        pdb.set_trace()
         if features:
             rt, fav, usr_followers, usr_following = features
             rt = rt.type(torch.FloatTensor).sqrt()
