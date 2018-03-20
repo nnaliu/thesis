@@ -48,7 +48,7 @@ vectors = Vectors('wiki.simple.vec', url=url)
 # train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 # FIX VOCAB SIZE
 
-train_val_generator, test, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 print("Vocab size ", vocab_size)
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
@@ -109,18 +109,16 @@ if args.use:
 elif args.model:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
-        train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
+        train_iter, val_iter = data_handler.get_bucket_iterators((train, val), args.batch_size)
 
         model = get_model()
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
             utils.train(model, train_iter, val_iter, 10)
-
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter)
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
             utils.train(model, train_iter, val_iter, 40, has_features=True)
-
-            p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter, has_features=True)
+            p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
 
         print('\n')
         print('TEST - WEIGHTED RESULTS')

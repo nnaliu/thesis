@@ -101,10 +101,11 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     tweet.build_vocab(all_tweets, vectors=vectors)
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
-    split = int(9. / 10 * len(tweet_exp))
-    train_val = tweet_exp[:split]
-    test = tweet_exp[split:]
-    test_data = data.Dataset(test, fields)
+    train_val = tweet_exp
+    # split = int(9. / 10 * len(tweet_exp))
+    # train_val = tweet_exp[:split]
+    # test = tweet_exp[split:]
+    # test_data = data.Dataset(test, fields)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_fold():
@@ -116,7 +117,7 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
             # yield (train, val,)
         return train_val_arr
 
-    return iter_fold(), test_data, len(tweet.vocab), tweet
+    return iter_fold(), len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):
@@ -169,7 +170,7 @@ def read_files(lower=False, vectors=None):
 
 # datasets is a tuple of dataset objects. The first one is the train set
 def get_bucket_iterators(datasets, batch_size, shuffle=False, repeat=False):
-    train_iter, val_iter, test_iter = data.BucketIterator.splits(
+    train_iter, val_iter = data.BucketIterator.splits(
         datasets, batch_size=batch_size, sort_key=lambda x: len(x.text), shuffle=shuffle,
         repeat=False, device=-1)
-    return train_iter, val_iter, test_iter
+    return train_iter, val_iter
