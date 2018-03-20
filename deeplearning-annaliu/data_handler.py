@@ -71,7 +71,7 @@ def prepare_csv():
 
 
 def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
-        lower = True if vectors is not None else False
+    lower = True if vectors is not None else False
     # tweet = data.Field(sequential=False, tensor_type=torch.LongTensor, lower=lower)
     tweet = data.Field(sequential=True)
     label = data.Field(sequential=False)
