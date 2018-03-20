@@ -35,7 +35,7 @@ def preprocess(s, lowercase=False):
     table = str.maketrans('', '', string.punctuation)
     p.set_options(p.OPT.URL, p.OPT.MENTION, p.OPT.RESERVED)
     s = p.tokenize(s)
-    tokens_raw = s.replace("\n","").split()
+    tokens_raw = s.replace("\n","").strip("'[]\' '").split()
 
     # Added lemmatization (1/1/18). Potentially should remove to compare results
     # tokens = gensim.utils.lemmatize(s, stopwords=STOPWORDS, min_length=1)
@@ -55,6 +55,7 @@ def prepare_csv():
     # columns = "id,created_at,text,retweet_count,favorite_count,user_screen_name,user_id,user_followers_count,user_following_count,hate_label".split(',')
     tweet_data = pd.read_csv(file_path, encoding='utf-8') # names=columns,
     tweet_data['text'] = tweet_data['text'].apply(lambda x: preprocess(str(x), lowercase=True))
+    tweet_data['text'] = tweet_data['text'].apply(lambda x: ' '.join(x))
     tweet_data['hate_label'] = tweet_data['hate_label'].apply(lambda x: hate_label[x] if x in hate_label else 0)
 
     # train, test = train_test_split(tweet_data, test_size=0.2)
@@ -69,6 +70,20 @@ def prepare_csv():
     tweet_data.to_csv("cache/tweets_data.csv", index=False, index_label=False, encoding='utf-8')
     return tweet_data
 
+def get_pretrained_embedding(tweet_vocab):
+    my_model_aligned_filename='../semantics/my_model_dstormer.bin'
+    pretrained_vectors = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
+    wv_matrx = []
+
+    for word in tweet_vocab.vocab.itos:
+        if word in word_vectors.vocab:
+            wv_matrix.append(pretrained_vectors.word_vec(word))
+        else:
+            wv_matrix.append(np.random.uniform(-0.01, 0.01, 300).astype("float32"))
+    wv_matrix.append(np.random.uniform(-0.01, 0.01, 300).astype("float32"))
+    wv_matrix.append(np.zeros(300).astype("float32"))
+
+    return wv_matrix
 
 def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     lower = True if vectors is not None else False
@@ -102,10 +117,6 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
     train_val = tweet_exp
-    # split = int(9. / 10 * len(tweet_exp))
-    # train_val = tweet_exp[:split]
-    # test = tweet_exp[split:]
-    # test_data = data.Dataset(test, fields)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     def iter_fold():

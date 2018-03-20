@@ -11,6 +11,8 @@ import torch.optim as optim
 import torchtext
 from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
+import gensim
+from gensim.models import Word2Vec, KeyedVectors
 
 import data_handler, utils
 import models
@@ -30,13 +32,12 @@ args = parser.parse_args()
 
 # Need to figure out how to not have headers writing to file in middle (Ctrl+F 'retweet_count')
 
-# vv GOOD LIFE RIGHT HERE
-# data_file = "cache/tweets_data.csv"
-# if os.path.isfile(data_file):
-#     tweet_data = pd.read_csv(data_file, encoding='utf-8')
-# else:
-#     tweet_data = data_handler.prepare_csv()
-# print("Finished preparing CSV")
+data_file = "cache/tweets_data.csv"
+if os.path.isfile(data_file):
+    tweet_data = pd.read_csv(data_file, encoding='utf-8')
+else:
+    tweet_data = data_handler.prepare_csv()
+print("Finished preparing CSV")
 
 # Word embeddings
 # vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
