@@ -27,7 +27,7 @@ class CNN_Mult_Embed(nn.Module):
         self.in_channel = 1
         self.out_channel = feature_maps
         self.model = model
-        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
+        self.embedding = nn.Embedding(self.vocab_size+2, embedding_dim)
 
         # Pretrained Embedding
         self.embedding.weight.data.copy_(torch.from_numpy(embeds))
@@ -35,9 +35,9 @@ class CNN_Mult_Embed(nn.Module):
         if model == "static":
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
-            self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
-            self.embedding2.weight.data.copy_(torch.from_numpy(embeds))
-            self.embedding2.weight.requires_grad = False
+            self.embedding2 = nn.Embedding(self.vocab_size+2, embedding_dim)
+            # self.embedding2.weight.data.copy_(torch.from_numpy(embeds))
+            # self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
         self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
