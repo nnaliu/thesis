@@ -108,7 +108,7 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     test_data = data.Dataset(test, fields)
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
-    def iter_folds():
+    def iter_fold(train_val):
         train_val = []
         for train_idx, val_idx in kf.split(train_val):
             train = data.Dataset(list(train_val[train_idx]), fields)
@@ -117,7 +117,7 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
             # yield (train, val,)
         return train_val
 
-    return iter_folds(), test_data, len(tweet.vocab), tweet
+    return iter_folds(train_val), test_data, len(tweet.vocab), tweet
 
 
 def read_files(lower=False, vectors=None):
