@@ -17,7 +17,7 @@ USE_CUDA = True if torch.cuda.is_available() else False
 
 class CNNClassifier(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=256, class_number=None,
-                feature_maps=100, filter_windows=[3,4,5], dropout=0.5, features=False):
+                feature_maps=100, filter_windows=[3,4,5], dropout=0.25, features=False):
         super(CNNClassifier, self).__init__()
 
         self.vocab_size = vocab_size
@@ -71,6 +71,8 @@ class CNNClassifier(nn.Module):
             embedding2 = self.embedding2(inputs)
             embedding2 = embedding2.unsqueeze(1)
             embedding = torch.cat((embedding, embedding2), 1)
+
+        embedding = self.dropout(embedding)
         
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
 
