@@ -79,7 +79,6 @@ def get_pretrained_embedding(tweet_vocab):
 
     for word in tweet_vocab.vocab.itos:
         if word in pretrained_vectors.vocab:
-            print(word)
             wv_matrix.append(pretrained_vectors.word_vec(word))
         else:
             wv_matrix.append(np.random.uniform(-0.01, 0.01, 300).astype("float32"))
