@@ -54,6 +54,7 @@ class CNN_Mult_Embed(nn.Module):
         return result
 
     def forward(self, inputs, features=None, test=False):
+        pdb.set_trace()
         if features:
             rt, fav, usr_followers, usr_following = features
             rt = rt.type(torch.FloatTensor).sqrt()

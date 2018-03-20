@@ -2,6 +2,7 @@ import gensim, logging
 from gensim.corpora import Dictionary, MmCorpus
 from gensim.models import TfidfModel
 from gensim.parsing.preprocessing import STOPWORDS
+from gensim.models import KeyedVectors
 import pandas as pd
 import preprocessor as p
 from sklearn.model_selection import train_test_split

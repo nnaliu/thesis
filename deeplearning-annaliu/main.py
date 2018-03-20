@@ -12,7 +12,7 @@ import torchtext
 from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 import gensim
-from gensim.models import Word2Vec, KeyedVectors
+from gensim.models import KeyedVectors
 
 import data_handler, utils
 import models
