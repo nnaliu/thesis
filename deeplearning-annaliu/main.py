@@ -117,19 +117,8 @@ elif args.model:
             utils.train(model, train_iter, val_iter, 20)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
-            utils.train(model, train_iter, val_iter, 40, has_features=True)
+            utils.train(model, train_iter, val_iter, 20, has_features=True)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
-
-        print('\n')
-        print('TEST - WEIGHTED RESULTS')
-        print('precision is ' + str(p))
-        print('recall is ' + str(r))
-        print('f1 is ' + str(f1))
-        print('TEST - MICRO RESULTS')
-        print('precision is ' + str(p1))
-        print('recall is ' + str(r1))
-        print('f1 is ' + str(f11))
-        print('\n')
 
         p_avg += p
         r_avg += r
