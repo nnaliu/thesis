@@ -82,6 +82,9 @@ def get_pretrained_embedding(tweet_vocab):
             wv_matrix.append(pretrained_vectors.word_vec(word))
         else:
             wv_matrix.append(np.random.uniform(-0.01, 0.01, 300).astype("float32"))
+
+    wv_matrix.append(np.random.uniform(-0.01, 0.01, 300).astype("float32"))
+    wv_matrix.append(np.zeros(300).astype("float32"))
     wv_matrix = np.array(wv_matrix)
     return wv_matrix
 
