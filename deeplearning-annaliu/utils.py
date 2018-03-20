@@ -89,14 +89,16 @@ def evaluate(model, data_iter, has_features=False):
     p, r, f1, s = precision_recall_fscore_support(true, preds, average='weighted')
     p1, r1, f11, s1 = precision_recall_fscore_support(true, preds, average='micro')
 
-    print('CURR - WEIGHTED RESULTS')
+    print('\n')
+    print('VAL - WEIGHTED RESULTS')
     print('precision is ' + str(p))
     print('recall is ' + str(r))
     print('f1 is ' + str(f1))
-    print('CURR - MICRO RESULTS')
+    print('VAL - MICRO RESULTS')
     print('precision is ' + str(p1))
     print('recall is ' + str(r1))
     print('f1 is ' + str(f11))
+    print('\n')
 
     return p, r, f1, p1, r1, f11
 

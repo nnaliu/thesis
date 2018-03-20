@@ -102,7 +102,6 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     label.build_vocab(all_tweets)
     tweet_exp = np.array(all_tweets.examples)
     split = int(9. / 10 * len(tweet_exp))
-    pdb.set_trace()
     train_val = tweet_exp[:split]
     test = tweet_exp[split:]
     test_data = data.Dataset(test, fields)

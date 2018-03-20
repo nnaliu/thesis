@@ -130,21 +130,21 @@ elif args.model:
         f11_avg += f11
 
     # Saving Model
-    if not args.use:
-        print("Saving Model...")
-        if args.model == "CNN":
-            filename = 'cnn_model.sav'
-        elif args.model == "CNNFeatures":
-            filename = 'cnn_model_features.sav'
-        elif args.model == "CNNMulti":
-            filename = 'cnn_multi_model.sav'
-        elif args.model == "CNNMultiFeatures":
-            filename = 'cnn_multi_model_features.sav'
-        elif args.model == "LSTM":
-            filename = 'lstm_model.sav'
-        elif args.model == "LSTMFeatures":
-            filename = 'lstm_model_features.sav'
-        torch.save(model.state_dict(), filename)
+    # if not args.use:
+    #     print("Saving Model...")
+    #     if args.model == "CNN":
+    #         filename = 'cnn_model.sav'
+    #     elif args.model == "CNNFeatures":
+    #         filename = 'cnn_model_features.sav'
+    #     elif args.model == "CNNMulti":
+    #         filename = 'cnn_multi_model.sav'
+    #     elif args.model == "CNNMultiFeatures":
+    #         filename = 'cnn_multi_model_features.sav'
+    #     elif args.model == "LSTM":
+    #         filename = 'lstm_model.sav'
+    #     elif args.model == "LSTMFeatures":
+    #         filename = 'lstm_model_features.sav'
+    #     torch.save(model.state_dict(), filename)
 
 print('WEIGHTED RESULTS')
 print('average precision is ' + str(p_avg/N_FOLDS))
