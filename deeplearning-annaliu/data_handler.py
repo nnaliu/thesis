@@ -71,12 +71,10 @@ def prepare_csv():
     tweet_data.to_csv("cache/tweets_data.csv", index=False, index_label=False, encoding='utf-8')
     return tweet_data
 
-def get_pretrained_embedding(tweet_vocab):
-    my_model_aligned_filename='../semantics/my_model_dstormer.bin'
-    pretrained_vectors = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
+def get_pretrained_embedding(tweet_vocab, file):
+    pretrained_vectors = KeyedVectors.load_word2vec_format(file, binary=True)
     
     wv_matrix = []
-
     for word in tweet_vocab.vocab.itos:
         if word in pretrained_vectors.vocab:
             wv_matrix.append(pretrained_vectors.word_vec(word))

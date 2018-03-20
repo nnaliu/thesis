@@ -43,6 +43,8 @@ print("Finished preparing CSV")
 # vectors = [GloVe(name='42B', dim='300')] # CharNGram(), FastText()
 url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
 vectors = Vectors('wiki.simple.vec', url=url)
+
+vectors = Vectors('')
 # vectors=None
 
 # train, val, test, vocab_size, tweet_vocab = data_handler.read_files(vectors=vectors)
@@ -52,7 +54,8 @@ vectors = Vectors('wiki.simple.vec', url=url)
 train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 print("Vocab size ", vocab_size)
 
-pretrained_embed = data_handler.get_pretrained_embedding(tweet_vocab)
+my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer.bin')
+g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
@@ -63,7 +66,7 @@ def get_model():
     elif args.model == 'CNNFeatures':
         m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
     elif args.model == 'CNNMulti':
-        m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=pretrained_embed, class_number=2)
+        m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2)
     elif args.model == 'CNNMultiFeatures':
         m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
     elif args.model == 'LSTM':
@@ -117,7 +120,7 @@ elif args.model:
         model = get_model()
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
-            utils.train(model, train_iter, val_iter, 50)
+            utils.train(model, train_iter, val_iter, 20)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
             utils.train(model, train_iter, val_iter, 20, has_features=True)

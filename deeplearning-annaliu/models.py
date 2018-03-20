@@ -30,13 +30,13 @@ class CNN_Mult_Embed(nn.Module):
         self.embedding = nn.Embedding(self.vocab_size+2, embedding_dim)
 
         # Pretrained Embedding
-        self.embedding.weight.data.copy_(torch.from_numpy(embeds))
+        self.embedding.weight.data.copy_(torch.from_numpy(embeds[0]))
 
         if model == "static":
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
             self.embedding2 = nn.Embedding(self.vocab_size+2, embedding_dim)
-            # self.embedding2.weight.data.copy_(torch.from_numpy(embeds))
+            self.embedding2.weight.data.copy_(torch.from_numpy(embeds[1]))
             # self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
