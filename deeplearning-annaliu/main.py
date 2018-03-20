@@ -54,24 +54,27 @@ print("Vocab size ", vocab_size)
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
-if args.model == 'CNN':
-    model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
-elif args.model == 'CNNFeatures':
-    model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
-elif args.model == 'CNNMulti':
-    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
-elif args.model == 'CNNMultiFeatures':
-    model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
-elif args.model == 'LSTM':
-    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
-elif args.model == 'LSTMFeatures':
-    model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
+def get_model():
+    if args.model == 'CNN':
+        model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
+    elif args.model == 'CNNFeatures':
+        model = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
+    elif args.model == 'CNNMulti':
+        model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+    elif args.model == 'CNNMultiFeatures':
+        model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
+    elif args.model == 'LSTM':
+        model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+    elif args.model == 'LSTMFeatures':
+        model = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
 
-if USE_CUDA and args.model:
-    print("USING CUDA")
-    model = model.cuda()
+    if USE_CUDA and args.model:
+        print("USING CUDA")
+        model = model.cuda()
+    return model
 
 if args.use:
+    model = get_model()
     model.load_state_dict(torch.load(args.use))
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
@@ -108,26 +111,15 @@ elif args.model:
         print("FOLD " + str(fold))
         train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 
-        if args.model == 'CNN' or args.model == 'CNNMulti':
-            utils.train(model, train_iter, val_iter, 5) # Change number of epochs later
-            utils.evaluate(model, val_iter)
-            # print("Validation: ", utils.evaluate(model, val_iter))
-        elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures':
-            utils.train(model, train_iter, val_iter, 5, has_features=True) # Change number of epochs later
-            utils.evaluate(model, val_iter, has_features=True)
-        elif args.model == 'LSTM':
-            utils.train(model, train_iter, val_iter, 30)
-            # print("Validation: ", utils.evaluate(model, val_iter))
-            utils.evaluate(model, val_iter)
-
-        elif args.model == 'LSTMFeatures':
-            utils.train(model, train_iter, val_iter, 30, has_features=True)
-            # print("Validation: ", utils.evaluate(model, val_iter, has_features=True))
-            utils.evaluate(model, val_iter, has_features=True)
+        model = get_model()
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
+            utils.train(model, train_iter, val_iter, 40)
+
             p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
+            utils.train(model, train_iter, val_iter, 40, has_features=True)
+
             p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter, has_features=True)
 
         p_avg += p
