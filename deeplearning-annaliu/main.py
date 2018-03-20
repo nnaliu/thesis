@@ -87,6 +87,22 @@ if args.use:
         p1_avg += p1
         r1_avg += r1
         f11_avg += f11
+
+    if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
+        p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter)
+    elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
+        p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter, has_features=True)
+
+    print("\nTEST ITER")
+    print('TEST - WEIGHTED RESULTS')
+    print('precision is ' + str(p))
+    print('recall is ' + str(r))
+    print('f1 is ' + str(f1))
+    print('TEST - MICRO RESULTS')
+    print('precision is ' + str(p1))
+    print('recall is ' + str(r1))
+    print('f1 is ' + str(f11))
+
 elif args.model:
     for fold, (train, val) in enumerate(train_val_generator):
         print("FOLD " + str(fold))
@@ -123,6 +139,7 @@ elif args.model:
 
     # Saving Model
     if not args.use:
+        print("Saving Model...")
         if args.model == "CNN":
             filename = 'cnn_model.sav'
         elif args.model == "CNNFeatures":
