@@ -150,8 +150,6 @@ class CNNClassifier(nn.Module):
             embedding2 = self.embedding2(inputs)
             embedding2 = embedding2.unsqueeze(1)
             embedding = torch.cat((embedding, embedding2), 1)
-
-        embedding = self.dropout(embedding)
         
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
 

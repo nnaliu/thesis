@@ -66,7 +66,7 @@ def get_model():
     elif args.model == 'CNNMulti':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2)
     elif args.model == 'CNNMultiFeatures':
-        m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
+        m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2, features=True)
     elif args.model == 'LSTM':
         m = models.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
     elif args.model == 'LSTMFeatures':
