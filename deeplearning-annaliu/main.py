@@ -13,7 +13,7 @@ from torchtext import data
 from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 
 import data_handler, utils
-import model
+import models
 import pdb
 
 torch.manual_seed(1)
@@ -56,17 +56,17 @@ p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
 def get_model():
     if args.model == 'CNN':
-        m = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
+        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
     elif args.model == 'CNNFeatures':
-        m = model.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
+        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
     elif args.model == 'CNNMulti':
-        m = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+        m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
     elif args.model == 'CNNMultiFeatures':
-        m = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
+        m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2, features=True)
     elif args.model == 'LSTM':
-        m = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
     elif args.model == 'LSTMFeatures':
-        m = model.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
 
     if USE_CUDA and args.model:
         print("USING CUDA")
@@ -114,7 +114,7 @@ elif args.model:
         model = get_model()
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
-            utils.train(model, train_iter, val_iter, 40)
+            utils.train(model, train_iter, val_iter, 20)
 
             p, r, f1, p1, r1, f11 = utils.evaluate(model, test_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
@@ -161,7 +161,7 @@ GuidedBackProp Saliency Analysis
 """
 
 # filename = 'cnn_model.sav'
-# model = model.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
+# model = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2)
 # model.load_state_dict(torch.load(filename))
 
 # if USE_CUDA:
