@@ -86,7 +86,8 @@ class CNN_Mult_Embed(nn.Module):
             result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
             result = self.fc(self.dropout(result))
         else:
-            result = self.fc(self.dropout(torch.cat(result, 1)))
+            result = self.dropout1(torch.cat(result, 1))
+            result = self.fc(result)
 
         if test and features:
             return result.retain_grad(), embedding.retain_grad()
