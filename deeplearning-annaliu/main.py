@@ -52,7 +52,7 @@ vectors = Vectors('wiki.simple.vec', url=url)
 train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 print("Vocab size ", vocab_size)
 
-my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer.bin')
+my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
 g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
