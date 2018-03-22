@@ -164,7 +164,9 @@ class CNNClassifier(nn.Module):
             result = nn.ReLU(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
             result = self.fc(result)
         else:
-            result = self.fc(nn.ReLU(self.dropout1(torch.cat(result, 1))))
+            result = self.dropout1(torch.cat(result, 1))
+            result = nn.ReLU(result)
+            result = self.fc(result)
 
         if test and features:
             return result.retain_grad(), embedding.retain_grad()
