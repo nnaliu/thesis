@@ -17,7 +17,7 @@ USE_CUDA = True if torch.cuda.is_available() else False
 
 class CNN_Mult_Embed(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, embeds=None, class_number=None,
-                feature_maps=100, filter_windows=[3,4,5], dropout=0.25, features=False):
+                feature_maps=100, filter_windows=[3,4,5], dropout=(0.25,0.5), features=False):
         super(CNN_Mult_Embed, self).__init__()
 
         self.vocab_size = vocab_size
@@ -41,7 +41,8 @@ class CNN_Mult_Embed(nn.Module):
             self.in_channel = 2
 
         self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout[0])
+        self.dropout1 = nn.Dropout(dropout[1])
 
         if features:
             self.fc = nn.Linear(len(filter_windows) * self.out_channel + 4, class_number)
@@ -96,7 +97,7 @@ class CNN_Mult_Embed(nn.Module):
 
 class CNNClassifier(nn.Module):
     def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, class_number=None,
-                feature_maps=100, filter_windows=[3,4,5], dropout=0.25, features=False):
+                feature_maps=100, filter_windows=[3,4,5], dropout=(0.25,0.5), features=False):
         super(CNNClassifier, self).__init__()
 
         self.vocab_size = vocab_size
@@ -116,7 +117,8 @@ class CNNClassifier(nn.Module):
             self.in_channel = 2
 
         self.conv = nn.ModuleList([nn.Conv2d(self.in_channel, self.out_channel, (F, embedding_dim)) for F in filter_windows])
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout[0])
+        self.dropout1 = nn.Dropout(dropout[1])
 
         if features:
             self.fc = nn.Linear(len(filter_windows) * self.out_channel + 4, class_number)
@@ -150,15 +152,19 @@ class CNNClassifier(nn.Module):
             embedding2 = self.embedding2(inputs)
             embedding2 = embedding2.unsqueeze(1)
             embedding = torch.cat((embedding, embedding2), 1)
+
+        embedding = self.dropout(embedding)
         
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
+
+        result = self.dropout1(result)
 
         if features:
             result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
             result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
-            result = self.fc(self.dropout(result))
+            result = self.fc(result)
         else:
-            result = self.fc(self.dropout(torch.cat(result, 1)))
+            result = self.fc(torch.cat(result, 1))
 
         if test and features:
             return result.retain_grad(), embedding.retain_grad()

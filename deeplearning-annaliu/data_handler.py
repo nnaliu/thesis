@@ -71,6 +71,7 @@ def prepare_csv():
     tweet_data.to_csv("cache/tweets_data.csv", index=False, index_label=False, encoding='utf-8')
     return tweet_data
 
+# https://github.com/galsang/CNN-sentence-classification-pytorch/blob/master/run.py
 def get_pretrained_embedding(tweet_vocab, file):
     pretrained_vectors = KeyedVectors.load_word2vec_format(file, binary=True)
     

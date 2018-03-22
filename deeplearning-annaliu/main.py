@@ -52,8 +52,8 @@ vectors = Vectors('wiki.simple.vec', url=url)
 train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
 print("Vocab size ", vocab_size)
 
-my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
-g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
+# my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
+# g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
@@ -64,7 +64,7 @@ def get_model():
     elif args.model == 'CNNFeatures':
         m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
     elif args.model == 'CNNMulti':
-        m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2)
+        m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, class_number=2) # embeds=(my_embed, g_embed)
     elif args.model == 'CNNMultiFeatures':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2, features=True)
     elif args.model == 'LSTM':
