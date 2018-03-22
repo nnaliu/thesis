@@ -157,14 +157,14 @@ class CNNClassifier(nn.Module):
         
         result = [self.convolution_max_pool(embedding, k, i, max_sent_len) for i, k in enumerate(self.conv)]
 
-        result = self.dropout1(result)
-
         if features:
             result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
-            result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
+            result = self.dropout1(result)
+            pdb.set_trace()
+            result = nn.ReLU(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
             result = self.fc(result)
         else:
-            result = self.fc(torch.cat(result, 1))
+            result = self.fc(nn.ReLU(self.dropout1(torch.cat(result, 1))))
 
         if test and features:
             return result.retain_grad(), embedding.retain_grad()
