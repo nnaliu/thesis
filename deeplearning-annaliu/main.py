@@ -49,11 +49,12 @@ vectors = Vectors('wiki.simple.vec', url=url)
 # train_iter, val_iter, test_iter = data_handler.get_bucket_iterators((train, val, test), args.batch_size)
 # FIX VOCAB SIZE
 
-train_val_generator, vocab_size, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+train_val_generator, tweet_vocab = data_handler.get_dataset(lower=True, vectors=vectors, n_folds=N_FOLDS, seed=42)
+vocab_size = len(tweet_vocab.vocab)
 print("Vocab size ", vocab_size)
 
-my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
-g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
+# my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
+# g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
@@ -62,7 +63,7 @@ def get_model():
     if args.model == 'CNN':
         m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, embeds=tweet_vocab, class_number=2)
     elif args.model == 'CNNFeatures':
-        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, embeds=tweet_vocab, class_number=2, features=True)
+        m = models.CNNClassifier(model='multichannel', vocab_size=vocab_size, embeds=tweet_vocab, class_number=2, features=True)
     elif args.model == 'CNNMulti':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2) # embeds=(my_embed, g_embed)
     elif args.model == 'CNNMultiFeatures':

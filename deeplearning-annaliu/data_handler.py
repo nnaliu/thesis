@@ -132,7 +132,7 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
             # yield (train, val,)
         return train_val_arr
 
-    return iter_fold(), len(tweet.vocab), tweet
+    return iter_fold(), tweet
 
 
 def read_files(lower=False, vectors=None):

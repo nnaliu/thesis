@@ -118,6 +118,7 @@ class CNNClassifier(nn.Module):
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
             self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
+            self.embedding2.weight.data.copy_(embeds.vectors)
             self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
