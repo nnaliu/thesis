@@ -161,13 +161,11 @@ class CNNClassifier(nn.Module):
             result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
             result = self.dropout1(result)
             pdb.set_trace()
-            result = nn.ReLU(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
+            result = F.relu(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
             result = self.fc(result)
         else:
             result = self.dropout1(torch.cat(result, 1))
-            pdb.set_trace()
-            result = F.relu(result)
-            pdb.set_trace()
+            result = F.relu(result) # This is very unnecessary
             result = self.fc(result)
 
         if test and features:

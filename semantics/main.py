@@ -49,9 +49,9 @@ def compare_word(word, gmodel, aligned_model):
 # my_model = import_model()
 # my_model_aligned = align_model(my_model)
 
-my_model_aligned_filename='my_model_aligned.bin'
+my_model_aligned_filename='my_model_dstormer_aligned.bin'
 my_model_aligned = KeyedVectors.load_word2vec_format(my_model_aligned_filename, binary=True)
-my_model_aligned_txt = my_model_aligned.wv.save_word2vec_format('my_model_aligned.txt', binary=False)
+my_model_aligned_txt = my_model_aligned.wv.save_word2vec_format('my_model_dstormer_aligned.txt', binary=False)
 
 # google: 0.33103912924302953
 # the: 0.5419154203028927
