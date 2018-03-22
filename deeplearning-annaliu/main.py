@@ -60,9 +60,9 @@ p1_avg, r1_avg, f11_avg = 0., 0., 0.
 
 def get_model():
     if args.model == 'CNN':
-        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2)
+        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, embeds=tweet_vocab, class_number=2)
     elif args.model == 'CNNFeatures':
-        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, class_number=2, features=True)
+        m = models.CNNClassifier(model='non-static', vocab_size=vocab_size, embeds=tweet_vocab, class_number=2, features=True)
     elif args.model == 'CNNMulti':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2) # embeds=(my_embed, g_embed)
     elif args.model == 'CNNMultiFeatures':

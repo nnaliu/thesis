@@ -99,7 +99,7 @@ class CNN_Mult_Embed(nn.Module):
 
 
 class CNNClassifier(nn.Module):
-    def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, class_number=None,
+    def __init__(self, model="non-static", vocab_size=None, embedding_dim=300, embeds=None, class_number=None,
                 feature_maps=100, filter_windows=[3,4,5], dropout=(0.25,0.5), features=False):
         super(CNNClassifier, self).__init__()
 
@@ -111,6 +111,9 @@ class CNNClassifier(nn.Module):
         self.out_channel = feature_maps
         self.model = model
         self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
+
+        if embeds:
+            self.embedding.weight.data.copy_(embeds.vectors)
 
         if model == "static":
             self.embedding.weight.requires_grad = False
@@ -163,7 +166,6 @@ class CNNClassifier(nn.Module):
         if features:
             result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
             result = self.dropout1(result)
-            pdb.set_trace()
             result = F.relu(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
             result = self.fc(result)
         else:
