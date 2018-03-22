@@ -83,8 +83,10 @@ class CNN_Mult_Embed(nn.Module):
 
         if features:
             result = torch.cat(result, 1).type(torch.FloatTensor).cuda() if USE_CUDA else torch.cat(result, 1).type(torch.FloatTensor)
-            result = torch.cat((result, rt, fav, usr_followers, usr_following), 1) # [batch_sz x (feature maps x filters) + 4]
-            result = self.fc(self.dropout(result))
+            result = self.dropout1(result)
+            pdb.set_trace()
+            result = F.relu(torch.cat((result, rt, fav, usr_followers, usr_following), 1)) # [batch_sz x (feature maps x filters) + 4]
+            result = self.fc(result)
         else:
             result = self.dropout1(torch.cat(result, 1))
             result = self.fc(result)
