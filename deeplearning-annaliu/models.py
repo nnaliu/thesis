@@ -165,7 +165,9 @@ class CNNClassifier(nn.Module):
             result = self.fc(result)
         else:
             result = self.dropout1(torch.cat(result, 1))
+            pdb.set_trace()
             result = nn.ReLU(result)
+            pdb.set_trace()
             result = self.fc(result)
 
         if test and features:
