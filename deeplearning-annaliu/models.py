@@ -112,15 +112,15 @@ class CNNClassifier(nn.Module):
         self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
 
         if embeds:
-            pdb.set_trace()
             new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
-            self.embedding.weight.data.copy_(new_embeds)
+            self.embedding.weight.data.copy_(new_embeds)    
 
         if model == "static":
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
             self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
-            self.embedding2.weight.data.copy_(embeds.vectors)
+            new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
+            self.embedding2.weight.data.copy_(new_embeds)
             self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
