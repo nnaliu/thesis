@@ -142,10 +142,10 @@ class CNNClassifier(nn.Module):
     def forward(self, inputs, features=None, test=False):
         if features:
             rt, fav, usr_followers, usr_following = features
-            # rt = rt.type(torch.FloatTensor).sqrt()
-            # fav = fav.type(torch.FloatTensor).sqrt()
-            # usr_followers = usr_followers.type(torch.FloatTensor).sqrt()
-            # usr_following = usr_following.type(torch.FloatTensor).sqrt()
+            rt = rt.type(torch.FloatTensor).sqrt()
+            fav = fav.type(torch.FloatTensor).sqrt()
+            usr_followers = usr_followers.type(torch.FloatTensor).sqrt()
+            usr_following = usr_following.type(torch.FloatTensor).sqrt()
             if USE_CUDA:
                 rt, fav, usr_followers, usr_following = rt.cuda(), fav.cuda(), usr_followers.cuda(), usr_following.cuda()
 

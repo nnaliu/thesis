@@ -59,19 +59,6 @@ def prepare_csv():
     tweet_data['text'] = tweet_data['text'].apply(lambda x: ' '.join(x))
     tweet_data['hate_label'] = tweet_data['hate_label'].apply(lambda x: hate_label[x] if x in hate_label else 0)
 
-    # Rescaling my features
-
-    print("PRINTING FEATURES FOR PAPER")
-    print("retweet count: " + str(max(tweet_data['retweet_count'])))
-    print("favorite_count: " + str(max(tweet_data['favorite_count'])))
-    print("user_followers_count: " + str(max(tweet_data['user_followers_count'])))
-    print("user_following_count: " + str(max(tweet_data['user_following_count'])))
-
-    tweet_data['retweet_count'] = np.sqrt(tweet_data['retweet_count']) / np.sqrt(max(tweet_data['retweet_count']))
-    tweet_data['favorite_count'] = np.sqrt(tweet_data['favorite_count']) / np.sqrt(max(tweet_data['favorite_count']))
-    tweet_data['user_followers_count'] = np.sqrt(tweet_data['user_followers_count']) / np.sqrt(max(tweet_data['user_followers_count']))
-    tweet_data['user_following_count'] = np.sqrt(tweet_data['user_following_count']) / np.sqrt(max(tweet_data['user_following_count']))
-
     # train, test = train_test_split(tweet_data, test_size=0.2)
     # print(train.shape, test.shape)
     # # Get validation dataset as well
@@ -108,10 +95,10 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     tweet = data.Field(sequential=True)
     label = data.Field(sequential=False)
     # label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    retweet_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    favorite_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    user_following_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
+    retweet_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    favorite_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_following_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
     fields = [
         ('id', None),
         ('created_at', None),
@@ -156,10 +143,10 @@ def read_files(lower=False, vectors=None):
     tweet = data.Field(sequential=True)
     label = data.Field(sequential=False)
     # label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    retweet_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    favorite_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
-    user_following_count = data.Field(use_vocab=False, tensor_type=torch.FloatTensor, preprocessing=data.Pipeline(lambda x: float(x)))
+    retweet_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    favorite_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    user_following_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
     fields = [
         ('id', None),
         ('created_at', None),
