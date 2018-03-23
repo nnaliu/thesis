@@ -46,6 +46,7 @@ def train(model, data_iter, val_iter, epochs, scheduler=None, grad_norm=5, has_f
     for epoch in range(epochs):
         counter += 1
         total_loss = 0
+        pdb.set_trace()
         for batch in data_iter:
             model.zero_grad()
             if has_features:

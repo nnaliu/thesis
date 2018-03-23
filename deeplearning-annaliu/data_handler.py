@@ -71,6 +71,7 @@ def prepare_csv():
     tweet_data['favorite_count'] = tweet_data['favorite_count'] / max(tweet_data['favorite_count'])
     tweet_data['user_followers_count'] = tweet_data['user_followers_count'] / max(tweet_data['user_followers_count'])
     tweet_data['user_following_count'] = tweet_data['user_following_count'] / max(tweet_data['user_following_count'])
+    pdb.set_trace()
 
     # train, test = train_test_split(tweet_data, test_size=0.2)
     # print(train.shape, test.shape)
