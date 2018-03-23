@@ -113,8 +113,8 @@ class CNNClassifier(nn.Module):
 
         if embeds:
             pdb.set_trace()
-            torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
-            self.embedding.weight.data.copy_(embeds.vocab.vectors)
+            new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
+            self.embedding.weight.data.copy_(new_embeds)
 
         if model == "static":
             self.embedding.weight.requires_grad = False
