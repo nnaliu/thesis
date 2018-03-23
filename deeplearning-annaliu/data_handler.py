@@ -108,10 +108,10 @@ def get_dataset(lower=False, vectors=None, n_folds=10, seed=42):
     tweet = data.Field(sequential=True)
     label = data.Field(sequential=False)
     # label = data.Field(sequential=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    retweet_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    favorite_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
-    user_following_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: int(x)))
+    retweet_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: float(x)))
+    favorite_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: float(x)))
+    user_followers_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: float(x)))
+    user_following_count = data.Field(use_vocab=False, tensor_type=torch.LongTensor, preprocessing=data.Pipeline(lambda x: float(x)))
     fields = [
         ('id', None),
         ('created_at', None),
