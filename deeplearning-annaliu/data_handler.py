@@ -67,11 +67,10 @@ def prepare_csv():
     print("user_followers_count: " + str(max(tweet_data['user_followers_count'])))
     print("user_following_count: " + str(max(tweet_data['user_following_count'])))
 
-    tweet_data['retweet_count'] = tweet_data['retweet_count'] / max(tweet_data['retweet_count'])
-    tweet_data['favorite_count'] = tweet_data['favorite_count'] / max(tweet_data['favorite_count'])
-    tweet_data['user_followers_count'] = tweet_data['user_followers_count'] / max(tweet_data['user_followers_count'])
-    tweet_data['user_following_count'] = tweet_data['user_following_count'] / max(tweet_data['user_following_count'])
-    pdb.set_trace()
+    tweet_data['retweet_count'] = np.sqrt(tweet_data['retweet_count']) / np.sqrt(max(tweet_data['retweet_count']))
+    tweet_data['favorite_count'] = np.sqrt(tweet_data['favorite_count']) / np.sqrt(max(tweet_data['favorite_count']))
+    tweet_data['user_followers_count'] = np.sqrt(tweet_data['user_followers_count']) / np.sqrt(max(tweet_data['user_followers_count']))
+    tweet_data['user_following_count'] = np.sqrt(tweet_data['user_following_count']) / np.sqrt(max(tweet_data['user_following_count']))
 
     # train, test = train_test_split(tweet_data, test_size=0.2)
     # print(train.shape, test.shape)

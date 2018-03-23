@@ -141,7 +141,6 @@ class CNNClassifier(nn.Module):
 
     def forward(self, inputs, features=None, test=False):
         if features:
-            pdb.set_trace()
             rt, fav, usr_followers, usr_following = features
             rt = rt.type(torch.FloatTensor).sqrt()
             fav = fav.type(torch.FloatTensor).sqrt()
