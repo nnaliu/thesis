@@ -112,7 +112,7 @@ class CNNClassifier(nn.Module):
         self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
 
         if embeds:
-            self.embedding.weight.data.copy_(embeds.vectors)
+            self.embedding.weight.data.copy_(embeds.vocab.vectors)
 
         if model == "static":
             self.embedding.weight.requires_grad = False
