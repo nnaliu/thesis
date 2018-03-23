@@ -119,8 +119,9 @@ class CNNClassifier(nn.Module):
             self.embedding.weight.requires_grad = False
         elif model == "multichannel":
             self.embedding2 = nn.Embedding(vocab_size+2, embedding_dim)
-            new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
-            self.embedding2.weight.data.copy_(new_embeds)
+            if embeds:
+                new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
+                self.embedding2.weight.data.copy_(new_embeds)
             self.embedding2.weight.requires_grad = False
             self.in_channel = 2
 
@@ -140,6 +141,7 @@ class CNNClassifier(nn.Module):
 
     def forward(self, inputs, features=None, test=False):
         if features:
+            pdb.set_trace()
             rt, fav, usr_followers, usr_following = features
             rt = rt.type(torch.FloatTensor).sqrt()
             fav = fav.type(torch.FloatTensor).sqrt()

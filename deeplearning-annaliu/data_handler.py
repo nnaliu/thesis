@@ -59,6 +59,19 @@ def prepare_csv():
     tweet_data['text'] = tweet_data['text'].apply(lambda x: ' '.join(x))
     tweet_data['hate_label'] = tweet_data['hate_label'].apply(lambda x: hate_label[x] if x in hate_label else 0)
 
+    # Rescaling my features
+
+    print("PRINTING FEATURES FOR PAPER")
+    print("retweet count: " + str(max(tweet_data['retweet_count'])))
+    print("favorite_count: " + str(max(tweet_data['favorite_count'])))
+    print("user_followers_count: " + str(max(tweet_data['user_followers_count'])))
+    print("user_following_count: " + str(max(tweet_data['user_following_count'])))
+
+    tweet_data['retweet_count'] = tweet_data['retweet_count'] / max(tweet_data['retweet_count'])
+    tweet_data['favorite_count'] = tweet_data['favorite_count'] / max(tweet_data['favorite_count'])
+    tweet_data['user_followers_count'] = tweet_data['user_followers_count'] / max(tweet_data['user_followers_count'])
+    tweet_data['user_following_count'] = tweet_data['user_following_count'] / max(tweet_data['user_following_count'])
+
     # train, test = train_test_split(tweet_data, test_size=0.2)
     # print(train.shape, test.shape)
     # # Get validation dataset as well
