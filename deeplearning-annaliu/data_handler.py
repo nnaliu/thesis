@@ -78,7 +78,7 @@ def prepare_fasttext(n_folds=10, seed=42):
     tweet_data['text'] = tweet_data['text'].apply(lambda x: preprocess(str(x), lowercase=True))
     tweet_data['text'] = tweet_data['text'].apply(lambda x: ' '.join(x))
     tweet_data['hate_label'] = tweet_data['hate_label'].apply(lambda x: '__label__' + str(hate_label[x]) if x in hate_label else 0)
-    tweet_data1 = tweet_data[['hate_label', 'text']]
+    tweet_data1 = tweet_data[['hate_label', 'text', 'retweet_count', 'favorite_count', 'user_followers_count', 'user_following_count']]
 
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     for i, (train_idx, val_idx) in enumerate(kf.split(tweet_data1)):

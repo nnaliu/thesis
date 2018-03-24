@@ -4,10 +4,9 @@ import csv
 from sklearn.metrics import precision_recall_fscore_support
 import pdb
 
-# data_handler.prepare_fasttext()
+data_handler.prepare_fasttext()
 
 N_FOLDS = 10
-
 
 # train_val_generator, tweet_vocab = data_handler.get_dataset(lower=True, vectors=None, n_folds=N_FOLDS, seed=42)
 # my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.txt')
@@ -21,8 +20,8 @@ def train_model():
         input_file = './cache/fasttext/train' + str(count) + '.txt'
         output_file = './cache/fasttext/model' + str(count)
 
-        classifier = fasttext.supervised(input_file, output_file, epoch=40, lr=0.1, dim=100, word_ngrams=2,
-                                        bucket= 2000000, pretrained_vectors='ft_model.vec')
+        classifier = fasttext.supervised(input_file, output_file, epoch=40, lr=0.1, dim=100,
+                                        bucket= 2000000)
 
         test_file = open("./cache/fasttext/test" + str(count) + '.txt', "r")
         tweet_file = test_file.readlines()
