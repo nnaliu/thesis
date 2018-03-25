@@ -187,7 +187,7 @@ class LSTMClassifier(nn.Module):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
-        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.embedding = nn.Embedding(vocab_size+2, embedding_dim)
         if embeds is not None:
             self.embedding.weight.data.copy_(torch.from_numpy(embeds))
         self.num_directions = 2 if bidirectional else 1
