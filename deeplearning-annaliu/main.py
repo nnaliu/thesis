@@ -69,9 +69,9 @@ def get_model():
     elif args.model == 'CNNMultiFeatures':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2, features=True)
     elif args.model == 'LSTM':
-        m = models.LSTMClassifier(256, 300, vocab_size, 2, embeds=my_embed, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(300, 300, vocab_size, 2, embeds=my_embed, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
     elif args.model == 'LSTMFeatures':
-        m = models.LSTMClassifier(256, 300, vocab_size, 2, embeds=tweet_vocab, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(300, 300, vocab_size, 2, embeds=tweet_vocab, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
 
     if USE_CUDA and args.model:
         print("USING CUDA")
