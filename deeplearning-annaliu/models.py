@@ -188,7 +188,7 @@ class LSTMClassifier(nn.Module):
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        if embeds:
+        if embeds is not None:
             new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
             self.embedding.weight.data.copy_(new_embeds) 
         self.num_directions = 2 if bidirectional else 1
