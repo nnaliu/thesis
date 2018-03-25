@@ -183,11 +183,14 @@ class CNNClassifier(nn.Module):
         return result
 
 class LSTMClassifier(nn.Module):
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, n_layers=1, batch_sz=128, dropout_p=(0.25,0.5), bidirectional=True, features=False):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, label_size, embeds=None, n_layers=1, batch_sz=128, dropout_p=(0.25,0.5), bidirectional=True, features=False):
         super(LSTMClassifier, self).__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        if embeds:
+            new_embeds = torch.cat((embeds.vocab.vectors, torch.rand(1, self.embedding_dim), torch.zeros(1, self.embedding_dim)), dim=0)
+            self.embedding.weight.data.copy_(new_embeds) 
         self.num_directions = 2 if bidirectional else 1
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // self.num_directions, n_layers, bidirectional=bidirectional)
         self.dropout = nn.Dropout(dropout_p[0])

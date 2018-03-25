@@ -53,7 +53,7 @@ train_val_generator, tweet_vocab = data_handler.get_dataset(lower=True, vectors=
 vocab_size = len(tweet_vocab.vocab)
 print("Vocab size ", vocab_size)
 
-# my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
+my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model_dstormer_aligned.bin')
 # g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
@@ -69,9 +69,9 @@ def get_model():
     elif args.model == 'CNNMultiFeatures':
         m = models.CNN_Mult_Embed(model='multichannel', vocab_size=vocab_size, embeds=(my_embed, g_embed), class_number=2, features=True)
     elif args.model == 'LSTM':
-        m = models.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(256, 300, vocab_size, 2, embeds=my_embed, n_layers=4, batch_sz=args.batch_size) # embedding dim, hidden dim, vocab_size, label_size
     elif args.model == 'LSTMFeatures':
-        m = models.LSTMClassifier(256, 300, vocab_size, 2, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
+        m = models.LSTMClassifier(256, 300, vocab_size, 2, embeds=tweet_vocab, n_layers=4, batch_sz=args.batch_size, features=True) # embedding dim, hidden dim, vocab_size, label_size
 
     if USE_CUDA and args.model:
         print("USING CUDA")
