@@ -248,8 +248,8 @@ def get_positive_negative_saliency(gradient):
     neg_saliency = (np.maximum(0, -gradient) / -gradient.min())
     return pos_saliency, neg_saliency
 
-counter = 0
-for counter in range(50):
-    filename = 'data/gradient' + str(counter) + '.csv'
-    metadata = 'data/metadata' + str(counter) + '.txt'
-    plot_saliency_map(filename, metadata, counter)
+# counter = 0
+# for counter in range(50):
+#     filename = 'data/gradient' + str(counter) + '.csv'
+#     metadata = 'data/metadata' + str(counter) + '.txt'
+#     plot_saliency_map(filename, metadata, counter)
