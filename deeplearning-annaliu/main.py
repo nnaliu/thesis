@@ -119,7 +119,7 @@ elif args.model:
         model = get_model()
 
         if args.model == 'CNN' or args.model == 'CNNMulti' or args.model == 'LSTM':
-            utils.train(model, train_iter, val_iter, 20)
+            utils.train(model, train_iter, val_iter, 25)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
             utils.train(model, train_iter, val_iter, 20, has_features=True)
