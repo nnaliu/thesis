@@ -53,7 +53,7 @@ train_val_generator, tweet_vocab = data_handler.get_dataset(lower=True, vectors=
 vocab_size = len(tweet_vocab.vocab)
 print("Vocab size ", vocab_size)
 
-my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/ft_model.bin')
+my_embed = data_handler.get_pretrained_embedding(tweet_vocab, 'ft_model.bin')
 # g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
