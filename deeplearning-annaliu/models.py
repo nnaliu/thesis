@@ -231,9 +231,9 @@ class LSTMClassifier(nn.Module):
         # output: [seq_len x batch x hidden]
 
         if features:
-            output = output[-1].type(torch.FloatTensor).cuda() if USE_CUDA else output[-1].type(torch.FloatTensor)
+            output = self.dropout1(output[-1].type(torch.FloatTensor)).cuda() if USE_CUDA else self.dropout1(output[-1].type(torch.FloatTensor))
             result = torch.cat((output, rt, fav, usr_followers, usr_following), 1)
-            result = self.hidden2label(self.dropout1(result))
+            result = self.hidden2label(result)
         else:
             result = self.hidden2label(self.dropout1(output[-1]))
         return result

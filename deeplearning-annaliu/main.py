@@ -54,7 +54,7 @@ vocab_size = len(tweet_vocab.vocab)
 print("Vocab size ", vocab_size)
 
 my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model.bin')
-g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
+# g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
