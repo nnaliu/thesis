@@ -54,7 +54,7 @@ vocab_size = len(tweet_vocab.vocab)
 print("Vocab size ", vocab_size)
 
 my_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/my_model.bin')
-g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
+# g_embed = data_handler.get_pretrained_embedding(tweet_vocab, '../semantics/GoogleNews-vectors-negative300.bin')
 
 p_avg, r_avg, f1_avg = 0., 0., 0.
 p1_avg, r1_avg, f11_avg = 0., 0., 0.
@@ -122,7 +122,7 @@ elif args.model:
             utils.train(model, train_iter, val_iter, 25)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter)
         elif args.model == "CNNFeatures" or args.model == 'CNNMultiFeatures' or args.model == 'LSTMFeatures':
-            utils.train(model, train_iter, val_iter, 20, has_features=True)
+            utils.train(model, train_iter, val_iter, 35, has_features=True)
             p, r, f1, p1, r1, f11 = utils.evaluate(model, val_iter, has_features=True)
 
         p_avg += p
